@@ -1,374 +1,315 @@
-# GitHub Solar System
+# 🪐 GitHub Solar System
 
-Turn a public GitHub profile into a self-contained, animated SVG solar system.
+**Your GitHub activity, reimagined as a living solar system.**
 
-The profile picture is the sun. Programming languages become planets sized by the
-code they represent. Every repository orbits its primary language as a moon, so
-the moons travel with their planet while also circling it. Recent public commits
-cross the field as comets, each labelled with its real repository. The only
-visible words are language names and repository names — no dashboard, no legend,
-no statistics panel.
+Turn any public GitHub profile into an animated universe where programming languages are planets, repositories are moons, and recent commits become shooting comets.
+
+Built with Python and SVG. No paid APIs, no JavaScript runtime, and no external rendering services.
 
 <p align="center">
-  <img
-    src="output/solar-system.svg"
-    alt="Shadow-Monarch-33 GitHub language solar system"
-    width="100%"
-  />
+  <img src="output/solar-system.svg" alt="Animated GitHub Solar System for Shadow-Monarch-33" width="100%" />
 </p>
 
-The SVG is the primary artifact. If your README host strips SVG motion or the
-embedded avatar, point the same `<img>` at the animated GIF fallback instead:
+<p align="center">
+  <a href="#getting-started">Get Started</a> ·
+  <a href="#how-it-works">How It Works</a> ·
+  <a href="#customization">Customize</a> ·
+  <a href="#automation">Automation</a>
+</p>
 
-```html
-<img src="output/solar-system.gif" alt="Animated GitHub language solar system" width="100%" />
-```
+## A little universe made from code
+
+GitHub profiles already tell us a lot about what people build. I wanted to see that information in a different way — something more visual, a little playful, and actually fun to look at.
+
+That's where GitHub Solar System comes in.
+
+Your GitHub avatar becomes the sun. The languages you've written become orbiting planets, complete with their recognizable logos. Your repositories become moons revolving around those planets, while recent development activity occasionally streaks across the screen as comets.
+
+And because the data comes directly from GitHub, the solar system changes as your projects grow.
 
 ## Features
 
-- **Avatar sun.** The configured account's real avatar is downloaded once,
-  resized by GitHub's avatar CDN, embedded as a data URI, and clipped into a
-  circular sun with a warm corona. No remote image request is needed to view the
-  SVG. A gradient sun renders if the avatar cannot be fetched or displayed.
-- **Living orbits.** Every language is a planet on its own elliptical orbit with
-  a different period, direction and starting phase. Orbits glow faintly and no
-  planet or moon zone overlaps the sun.
-- **Nested moon motion.** Each repository is a moon inside its planet's moving
-  group, so it follows the planet around the sun while revolving around the
-  planet itself. Repository names stay upright and travel with their moon.
-- **Real commit comets.** The generator fetches recent commits from the
-  configured user's public repositories through the GitHub REST API. Each comet
-  is a verified commit with its repository name beside the head, a pure-white
-  glowing head and a fading white tail. Every comet travels diagonally from the
-  upper-left to the lower-right. Commits are deduplicated by repository and SHA,
-  sorted newest first, and rotated on one shared cycle so at most two comets are
-  visible at any instant — including the loop boundary. No commits means no
-  comets.
-- **Deterministic snapshot.** Layout, stars, orbits and comet paths are seeded
-  from the data and canvas, never from the current clock. The SVG contains no
-  generation timestamp, so unchanged input produces identical bytes.
-- **Pure black field.** The canvas is `#000000` with white stars and white orbit
-  hairlines. Only the language planets and their moons carry colour.
-- **Static fallback.** Motion is SMIL and the base transform places every planet
-  and moon at its static position. A renderer that strips animation still gets a
-  complete still composition. `prefers-reduced-motion: reduce` swaps in a static
-  layer, and `--no-animation` removes motion entirely.
-- **README-safe by construction.** One SVG with inline gradients, a system font
-  stack, links, SMIL motion and a data-URI avatar. No scripts, no external fonts,
-  no remote assets, no tokens.
-- **Free forever.** Standard-library Python generator, MIT licensed.
+- **Your avatar is the sun.** Your actual GitHub profile picture sits at the center, surrounded by a subtle golden glow.
+- **Languages become planets.** Each detected language receives its own planet, sized according to its share of your codebase.
+- **Recognizable language logos.** Built-in support for 55+ languages and technologies, with automatic fallbacks for unfamiliar ones.
+- **Repositories become moons.** Each repository orbits the planet representing its primary language.
+- **Real activity becomes comets.** Recent verified commits produce white shooting comets, labelled with the repository they came from.
+- **Continuous orbital animation.** Planets revolve around the sun while moons independently revolve around their moving planets.
+- **A clean space aesthetic.** Pure black background, white stars, subtle orbital paths, and no unnecessary statistics panels.
+- **Automatic daily updates.** GitHub Actions refreshes the visualization using live public GitHub data.
+- **Deterministic output.** The same input produces the same SVG, avoiding unnecessary commits.
+- **Self-contained SVG.** No JavaScript, external fonts, remotely loaded artwork, or paid services.
+
+The whole thing is designed to work as a GitHub profile README graphic, but you can also open the SVG directly in a browser.
 
 ## How it works
 
-```text
-GitHub REST API
-      │
-      ▼
-src/github_client.py   user · repositories · language bytes · commits · avatar
-      │                 pagination · retries · rate limits · fork filtering
-      ▼
-src/data_models.py     typed User / Repository / Language / Commit models
-      │
-      ▼
-src/layout.py          deterministic geometry: orbits, nested moons, comets
-      │
-      ▼
-src/renderer.py        self-contained SVG with atomic file writes
-      │
-      ▼
-output/solar-system.svg
-      │
-      ▼
-tools/render_gif.py    optional animated GIF fallback (Chrome + ffmpeg)
-```
+The generator reads your public GitHub profile using the GitHub REST API and turns that information into a visual scene.
 
-### Data sources
+| GitHub data | Solar system |
+|---|---|
+| Profile picture | Sun |
+| Programming languages | Planets |
+| Language code-byte totals | Planet sizes |
+| Public repositories | Moons |
+| Primary repository language | Moon's parent planet |
+| Recent eligible commits | Comets |
 
-| Endpoint | Purpose |
-| --- | --- |
-| `GET /users/{login}` | Profile identity and avatar URL |
-| `GET /users/{login}/repos` | Public repositories, paginated via `Link` |
-| `GET /repos/{full_name}/languages` | Language byte breakdown per repository |
-| `GET /repos/{full_name}/commits?since=…` | Recent real commits for comets |
-| Avatar CDN | Profile image, requested at 256 px and embedded as a data URI |
+Each repository contributes to its detected language totals, but appears as a moon around only its primary language planet.
 
-Forks and archived repositories are excluded by default (both configurable).
-Repositories without a detected language cannot become moons; they are not
-rendered as placeholder planets and no count of them is shown in the image.
+Languages aren't limited to Python, JavaScript, TypeScript, or any particular set. Whenever GitHub detects a new supported language, the generator can create a planet for it automatically.
 
-### Language weighting
+### The animation
 
-A repository's primary language is the language with the most bytes in its
-language breakdown, falling back to GitHub's `language` field and finally the
-repository size when a breakdown is unavailable. A planet's size is a
-square-root mapping of its language's share of the largest language:
+Planets follow wide, elliptical orbits around the sun, each with its own speed and starting position.
 
-```text
-share  = language_bytes / largest_language_bytes
-radius = clamp(8 + 26 · √share, 8, 34)   # pixels, before fit compression
-```
+Moons are attached to their parent planets, so they move around the sun alongside them while maintaining their own local revolution.
 
-The square root keeps a small language visible while leaving the dominant
-language visibly dominant. Planet colors use GitHub's linguist palette where a
-language is known, so Python, TypeScript, Ruby and friends remain recognizable.
+Comets enter from the left, travelling toward the lower-right with long white trails. Their repository names appear beside them and disappear when they leave the scene.
 
-### Layout and motion
+Comets follow a round-robin rotation of repositories with eligible recent activity. A repository won't appear twice before the other eligible repositories have had their turn, and no more than two comets are visible at once.
 
-- Planets sit on elliptical orbits (up to 1.55:1) around the avatar sun. Each
-  planet has its own period, direction and phase, so the scene never marches in
-  lockstep.
-- Each planet group follows an elliptical relative path. Moons are children of
-  that group and follow circular relative paths, which is what makes the nested
-  motion work without JavaScript.
-- Every label rides a radial ring around its planet or moon: the label rotates
-  outward with its body while an opposite rotation keeps the text upright. Moons
-  of one planet share a single period, so their staggered phases never collapse
-  into a cluster and their labels stay fanned out. A black outline keeps every
-  name legible over stars, orbits and the sun.
-- Labels are only language names and repository names. There is no title,
-  subtitle, quote, count, percentage legend, repository index or statistics
-  panel.
-- Stars, orbits, planet phases and comet trajectories are seeded from
-  `sha256(canvas + login)` plus stable commit identities, never from
-  `random.seed()` defaults or the clock.
+No eligible recent commits means no comets. Nothing is fabricated to make the scene look busier.
 
-### Comet window
+## Getting started
 
-The default lookback is **7 days** and is configurable with
-`--commit-lookback-days`. The generator queries the commits endpoint for the
-most recently pushed public repositories, deduplicates by repository and SHA,
-sorts newest first, and keeps up to `--max-comets` entries (default 6). All
-entries share one cycle: each comet flies for 8 seconds, entries start 5.5
-seconds apart, so two neighbours may overlap briefly but a third never appears.
-The cycle length is padded so the final comet finishes before the loop restarts.
-Each comet links to its commit and shows the repository name; no SHA, timestamp
-or commit message is displayed. When there are no qualifying commits, no comet
-is drawn. The SVG is a snapshot; the scheduled workflow refreshes it.
+### Requirements
 
-## Quick start
+- Python 3.10 or newer
+- Internet access to fetch public GitHub data
+- An optional GitHub token for higher API limits
+
+The SVG generator uses Python's standard library.
+
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/Shadow-Monarch-33/github-solar-system.git
 cd github-solar-system
-python generate.py --username Shadow-Monarch-33 --output output/solar-system.svg
 ```
 
-Python 3.10+ is required. Generation uses only the standard library. Open the
-SVG in any browser, or preview it as a PNG:
+### 2. Generate your solar system
+
+Replace `YOUR_USERNAME` with your GitHub username.
 
 ```bash
-qlmanage -t -s 1200 -o /tmp output/solar-system.svg     # macOS
+python3 generate.py \
+  --username YOUR_USERNAME \
+  --output output/solar-system.svg
 ```
 
-### Offline fixture mode
+That's it. Open `output/solar-system.svg` in a browser to see your solar system.
 
-No network, no API quota:
+### 3. Try it without the GitHub API
+
+The repository includes a sample dataset for offline testing.
 
 ```bash
-python generate.py --fixture tests/fixtures/sample.json --output output/solar-system-fixture.svg
+python3 generate.py \
+  --fixture tests/fixtures/sample.json \
+  --output output/solar-system.svg
 ```
 
-The bundled fixture is a real snapshot of `Shadow-Monarch-33` — profile, eight
-public repositories, language bytes and recent commits — with a local avatar
-image (`tests/fixtures/avatar.jpg`). It exercises the same layout, avatar and
-comet paths as a live run.
+Fixture mode is useful when experimenting with the layout or when you've hit GitHub's API rate limit.
 
-### Options
+**Note:** Fixture data is a saved snapshot. For your latest repositories and languages, generate using `--username` instead.
 
-| Option | Default | Description |
-| --- | --- | --- |
-| `--username` | — | GitHub login to visualise |
-| `--output` | — (required) | Destination SVG path |
-| `--fixture` | — | Read `{user, repos, commits}` JSON instead of calling the API |
-| `--theme` | `nebula` | `nebula`, `midnight`, `light`, `mono` |
-| `--width` / `--height` | `1200` / `675` | Canvas size (minimum 320×240) |
-| `--star-density` | `normal` | `off`, `low`, `normal`, `high` |
-| `--include-forks` | off | Include forks |
-| `--include-archived` | off | Include archived repositories |
-| `--no-animation` | off | Static-only SVG |
-| `--no-comets` | off | Omit the commit comet layer |
-| `--commit-lookback-days` | `7` | Recent commit window |
-| `--max-comets` | `6` | Comets in the rotation (at most two visible at once) |
-| `--avatar` | — | Use a local image file for the sun |
-| `--no-avatar` | off | Use the fallback gradient sun |
-| `--max-language-fetches` | 15 (50 with token) | Repositories to query for language bytes |
+## Add it to your GitHub profile
 
-Set `GITHUB_TOKEN` to raise the API limit from 60 to 5,000 requests per hour.
-The token is sent only in the `Authorization` header — it never reaches the SVG,
-the logs, or the repository.
+Once your generated SVG is committed to a public repository, you can embed it directly into your profile README.
 
-## Animated GIF fallback
+```html
+<p align="center">
+  <img
+    src="https://raw.githubusercontent.com/YOUR_USERNAME/github-solar-system/main/output/solar-system.svg"
+    alt="My GitHub Solar System"
+    width="100%"
+  />
+</p>
+```
 
-The SVG is the primary output. Some hosts suppress SMIL animation or sanitize
-embedded data-URI images, so the repository also ships an optional GIF:
+Replace `YOUR_USERNAME` with your account name.
+
+The repository hosting the SVG needs to be public for other visitors to access the image reliably.
+
+GitHub may cache the image, so updates aren't always visible immediately.
+
+### Optional animated GIF
+
+Some environments don't fully support SVG animation or embedded avatar images. An animated GIF can be used as a fallback.
 
 ```bash
-python tools/render_gif.py \
+python3 tools/render_gif.py \
   --svg output/solar-system.svg \
-  --output output/solar-system.gif \
-  --duration 8 --fps 8
+  --output output/solar-system.gif
 ```
 
-The helper samples the SVG timeline in headless Chrome and assembles the frames
-with `ffmpeg`. It is optional tooling; the generator itself stays
-standard-library only. The GIF is 1000 px wide, loops with a short fade, and
-does not need any JavaScript at view time.
+The GIF renderer uses headless Chrome and FFmpeg. These aren't required for normal SVG generation.
 
-## Automate with GitHub Actions
+The SVG is the primary output; the GIF is optional.
 
-The bundled workflow (`.github/workflows/update.yml`) runs daily at
-`04:17 UTC`, can be triggered manually from the Actions tab, regenerates the
-SVG with the repository's `GITHUB_TOKEN`, validates it, optionally regenerates
-the GIF fallback, and commits only when bytes changed.
+## Automation
 
-```yaml
-permissions:
-  contents: write
+You don't need to regenerate your solar system manually every time you create a repository or learn a new language.
 
-on:
-  schedule:
-    - cron: "17 4 * * *"
-  workflow_dispatch:
-```
+The included GitHub Actions workflow can do that for you.
 
-Because the workflow only reacts to `schedule` and `workflow_dispatch`, the
-`[skip ci]` commit cannot retrigger it. If GitHub data cannot be fetched, the
-command exits non-zero and the previously committed SVG stays untouched.
+It:
 
-## Embed in your profile README
+1. Fetches your latest public GitHub data.
+2. Regenerates the solar system.
+3. Validates the generated SVG.
+4. Commits and pushes updated output only when something has changed.
 
-Replace the username and repository if you are using your own fork:
+The workflow runs daily at **04:17 UTC** and also supports manual execution.
 
-```html
-<p align="center">
-  <img
-    src="https://raw.githubusercontent.com/Shadow-Monarch-33/github-solar-system/main/output/solar-system.svg"
-    alt="Shadow-Monarch-33 GitHub language solar system"
-    width="100%"
-  />
-</p>
-```
+### Setting it up
 
-If GitHub suppresses the SVG animation or the embedded avatar, use the GIF:
+Fork the repository or publish your own copy, then:
 
-```html
-<p align="center">
-  <img
-    src="https://raw.githubusercontent.com/Shadow-Monarch-33/github-solar-system/main/output/solar-system.gif"
-    alt="Animated GitHub language solar system"
-    width="100%"
-  />
-</p>
-```
+1. Open `.github/workflows/update.yml`.
+2. Replace the configured GitHub username with yours.
+3. Ensure GitHub Actions has permission to write repository contents.
+4. Open **Actions → Update solar system → Run workflow**.
+5. Check the job logs to confirm generation and publishing succeeded.
 
-GitHub's image proxy caches assets, so a freshly regenerated image may take a
-while to appear in a profile README. Nothing in the file itself is stale.
+The workflow uses the built-in `GITHUB_TOKEN` for authenticated requests.
 
-### What is verified, and what GitHub controls
+If GitHub's API is temporarily unavailable, the generator exits without overwriting the last successfully generated SVG.
 
-- The SVG is validated as XML, contains no scripts or external assets, and every
-  `<image>` reference is a `data:image/…` URI.
-- The avatar is embedded as a JPEG/PNG data URI and rendered through a circular
-  clip in headless Chrome; the fallback gradient sun is present underneath.
-- Planetary, moon and comet motion is rendered at multiple points in the SMIL
-  timeline in headless Chrome.
-- GitHub's SVG sanitizer and image proxy are outside local control. If a future
-  sanitizer strips SMIL or the data-URI avatar, the SVG degrades to a still
-  composition with the fallback sun, and the GIF fallback remains available.
+### API limits
 
-## Use it for your own profile
+Unauthenticated GitHub API requests typically have a limit of 60 requests per hour. Authenticated requests using a standard GitHub token generally have a much higher limit.
 
-1. Fork this repository.
-2. Edit the username in `.github/workflows/update.yml`.
-3. Run the workflow once (`Actions → Update solar system → Run workflow`).
-4. Point the `<img>` snippet at your fork.
-5. Optionally change `--theme`, dimensions, `--star-density` or
-   `--commit-lookback-days` in the workflow.
+For profiles with many repositories, using a token is recommended so the generator can fetch detailed language statistics more reliably.
 
-The generator itself is generic: it works for any public GitHub account.
+Only public repository information is displayed.
 
 ## Customization
 
-- **Themes** live in `src/styles.py` (`THEMES`). Add a palette to `THEMES` and
-  pass `--theme your-name`.
-- **Language colors** live in `src/colors.py` (`LANGUAGE_COLORS`).
-- **Dimensions, star density, forks, archived repos, animation, comets,
-  lookback and avatar source** are CLI flags and workflow arguments.
-- **Planet scaling** is `_planet_radius` in `src/layout.py`.
-- **Orbit spacing** is `_fit_orbits` in `src/layout.py`.
-- **Moon density** is `MOONS_PER_RING` (12) in `src/layout.py`.
-- **Orbit ellipticity** is `ASPECT_CAP` (1.55) in `src/layout.py`.
-- **Comet count** is `DEFAULT_COMET_LIMIT` (6) in `src/layout.py`.
+You can change the appearance and behavior without rewriting the generator.
 
-Every default is tuned so the first run already looks finished.
+| Option | What it changes |
+|---|---|
+| `--username` | GitHub account to visualize |
+| `--theme` | Available visual theme |
+| `--width`, `--height` | SVG dimensions |
+| `--star-density` | Number of background stars |
+| `--include-forks` | Include forked repositories |
+| `--include-archived` | Include archived repositories |
+| `--commit-lookback-days` | How far back to search for recent commits |
+| `--max-comets` | Number of comet entries |
+| `--no-comets` | Disable comet visualization |
+| `--no-animation` | Generate a static solar system |
+| `--avatar` | Use a local image for the sun |
+| `--no-avatar` | Use the fallback sun |
 
-## Tests
+Run `python3 generate.py --help` for the complete list.
 
-```bash
-pip install -r requirements.txt
-python -m pytest -q
-```
+### Changing the design
 
-The suite covers API parsing and pagination, retries, rate-limit handling,
-language aggregation and fallback, primary-language selection, planet/moon
-assignment, nested relative motion paths, canvas bounds, extreme repository and
-language counts, commit deduplication and comet mapping, avatar embedding and
-fallback, XML escaping, SVG validity, absence of scripts and external assets,
-comet direction and two-comet concurrency limits, white comet styling, pure
-black background, permanent repository names, animation toggling, fixture mode
-and CLI exit codes.
+The main files you'll want to explore are:
 
-## Known limitations
+- `src/layout.py` — Orbit geometry, planet sizes, moon placement, and comet motion.
+- `src/renderer.py` — SVG generation, labels, stars, gradients, and visual effects.
+- `src/logos.py` — Language logos and fallbacks.
+- `src/colors.py` — Language colors.
+- `src/styles.py` — Theme definitions.
 
-- GitHub caches rendered images; updates are not instant in profile READMEs.
-- Unauthenticated requests are limited to 60 per hour, so only the first 15
-  repositories get precise language-byte data unless a token is provided. The
-  rest fall back to GitHub's primary language and repository size.
-- Comets use the most recently pushed public repositories up to a bounded
-  request budget; a repository that has not been pushed within the lookback
-  window contributes no comet.
-- Labels ride a radial ring around their body and stay upright. Adjacent planets
-  can still bring two labels close as their orbits cross, and a moon label on the
-  inner side of a planet may pass over the sun's glow. Black outlines keep every
-  name readable, and `--no-animation` renders a clean still frame.
-- SMIL animation and data-URI `<image>` support vary across README hosts. The
-  static fallback and GIF fallback cover hosts that suppress either.
-- Repositories with no detected language cannot become moons; there is no
-  language planet to attach them to.
-- Only public data is accessible. Private repositories are never fetched.
+The default design uses a pure-black background, white stars, a subtle golden sun, and colored language planets.
 
 ## Project structure
 
 ```text
 github-solar-system/
-├── .github/workflows/update.yml
+├── .github/
+│   └── workflows/
+│       └── update.yml
 ├── src/
-│   ├── __init__.py
 │   ├── avatar.py
 │   ├── colors.py
 │   ├── data_models.py
 │   ├── github_client.py
 │   ├── layout.py
+│   ├── logos.py
 │   ├── renderer.py
 │   └── styles.py
 ├── tests/
-│   ├── conftest.py
-│   ├── fixtures/avatar.jpg
-│   ├── fixtures/sample.json
-│   ├── test_avatar.py
-│   ├── test_cli.py
-│   ├── test_github_client.py
-│   ├── test_layout.py
-│   └── test_renderer.py
-├── tools/render_gif.py
-├── output/solar-system.svg
-├── output/solar-system.gif
+│   └── fixtures/
+├── tools/
+│   └── render_gif.py
+├── output/
+│   └── solar-system.svg
 ├── generate.py
 ├── requirements.txt
 ├── LICENSE
 └── README.md
 ```
 
+### Under the hood
+
+The project is split into a few straightforward stages.
+
+**GitHub client:** Fetches profile information, repositories, language statistics, and recent commits. Handles pagination, retries, filtering, and rate limits.
+
+**Data models:** Organizes the retrieved information into typed objects that the layout engine can use.
+
+**Layout engine:** Calculates planet orbits, relative moon positions, labels, and comet trajectories. Uses deterministic values so repeated generations remain consistent.
+
+**SVG renderer:** Produces the finished, self-contained visualization with embedded assets and animation.
+
+**Optional GIF renderer:** Captures animation frames in a headless browser and assembles them into a looping GIF.
+
+## Tests
+
+Install the development dependencies:
+
+```bash
+python3 -m pip install -r requirements.txt
+```
+
+Then run:
+
+```bash
+python3 -m pytest -q
+```
+
+The tests cover GitHub API behavior, language aggregation, repository assignment, orbital geometry, nested animation, comet scheduling, avatar handling, SVG validity, CLI behavior, and offline fixture generation.
+
+They also check important edge cases, including empty profiles, unknown languages, dense layouts, and API failures.
+
+## Things to know
+
+A few limitations are worth keeping in mind.
+
+**GitHub language detection:** The generator relies on GitHub's language statistics. Technologies used through dependencies, database connections, or configuration don't necessarily appear as separate languages. For example, using PostgreSQL doesn't automatically create a PostgreSQL planet.
+
+**Repository assignment:** Each repository contributes language statistics, but its moon belongs to only one primary language planet.
+
+**SVG compatibility:** Native SVG animations work in supported browsers, but GitHub and other README hosts may handle animation or embedded images differently. The static composition and optional GIF provide alternatives.
+
+**Crowded profiles:** The layout adapts to profiles with many languages and repositories, though very dense systems may have occasional visual crowding.
+
+**Recent activity:** Comets represent eligible commits within the configured lookback and API request limits. They aren't a complete history of every contribution.
+
+**Public data only:** Private repositories and their commit histories are not exposed.
+
+## Contributing
+
+Contributions are welcome.
+
+Whether it's adding language logos, improving orbital layouts, fixing edge cases, optimizing rendering, or making the project easier to customize, feel free to open an issue or submit a pull request.
+
+If you're changing the generator, please run the tests before submitting your changes.
+
 ## License
 
-MIT © 2026 Shadow-Monarch-33. Use it, fork it, restyle it, ship it.
+Released under the [MIT License](LICENSE).
+
+Free to use, modify, fork, and build upon.
+
+---
+
+<p align="center">
+  <strong>Made for developers who like watching their projects grow.</strong>
+</p>
