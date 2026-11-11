@@ -80,4 +80,5 @@ jobs:
             git add output/solar-system.gif
           fi
           git commit -m "chore: update solar system [skip ci]"
+          git pull --rebase origin "${GITHUB_REF_NAME:-main}"
           git push
