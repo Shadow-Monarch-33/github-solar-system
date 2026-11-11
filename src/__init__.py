@@ -10,17 +10,16 @@ from .colors import (
     shade,
     with_alpha,
 )
-from .data_models import Language, Repository, SolarSystem, User
+from .data_models import Commit, Language, Repository, SolarSystem, User
 from .github_client import API_ROOT, GitHubClient, GitHubError
 from .layout import (
+    DEFAULT_COMET_LIMIT,
     DEFAULT_HEIGHT,
     DEFAULT_WIDTH,
     STAR_DENSITY,
     Comet,
-    Label,
     Moon,
     Planet,
-    RepoIndex,
     SolarSystemLayout,
     Star,
     build_layout,
@@ -31,16 +30,16 @@ from .styles import DEFAULT_THEME, THEMES, get_theme
 __all__ = [
     "API_ROOT",
     "Comet",
+    "Commit",
+    "DEFAULT_COMET_LIMIT",
     "DEFAULT_HEIGHT",
     "DEFAULT_THEME",
     "DEFAULT_WIDTH",
     "GitHubClient",
     "GitHubError",
-    "Label",
     "Language",
     "Moon",
     "Planet",
-    "RepoIndex",
     "Repository",
     "STAR_DENSITY",
     "SolarSystem",

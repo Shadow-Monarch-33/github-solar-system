@@ -15,6 +15,7 @@ concurrency:
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -41,23 +42,42 @@ jobs:
           import xml.etree.ElementTree as ElementTree
 
           svg = pathlib.Path("output/solar-system.svg").read_text(encoding="utf-8")
-          ElementTree.fromstring(svg)
+          root = ElementTree.fromstring(svg)
           lowered = svg.lower()
-          for forbidden in ("<script", "<image", "<foreignobject", "@import"):
+          for forbidden in ("<script", "<foreignobject", "@import", "url(http", "xlink:href", "javascript:"):
               assert forbidden not in lowered, forbidden
-          assert "url(http" not in lowered
+          for node in root.iter():
+              tag = node.tag.rsplit("}", 1)[-1]
+              if tag == "image":
+                  href = node.get("href") or ""
+                  assert href.startswith("data:image/"), "external image in SVG"
           assert "ghp_" not in svg and "github_pat_" not in svg
           print("SVG is valid XML with no scripts, external assets or tokens")
           PY
 
+      - name: Generate animated GIF fallback
+        continue-on-error: true
+        run: python tools/render_gif.py --svg output/solar-system.svg --output output/solar-system.gif
+
+      - name: Validate GIF fallback
+        run: |
+          if [ -s output/solar-system.gif ]; then
+            file output/solar-system.gif
+          else
+            echo "No GIF fallback generated; keeping the SVG only"
+          fi
+
       - name: Commit and push when changed
         run: |
-          if [ -z "$(git status --porcelain output/solar-system.svg)" ]; then
+          if [ -z "$(git status --porcelain output/solar-system.svg output/solar-system.gif)" ]; then
             echo "No changes to commit"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add output/solar-system.svg
+          if [ -f output/solar-system.gif ]; then
+            git add output/solar-system.gif
+          fi
           git commit -m "chore: update solar system [skip ci]"
           git push

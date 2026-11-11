@@ -11,7 +11,12 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.data_models import Repository, User  # noqa: E402
+from src.data_models import Commit, Repository, User  # noqa: E402
+
+TINY_PNG = (
+    "data:image/png;base64,"
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PzWvWQAAAABJRU5ErkJggg=="
+)
 
 
 @pytest.fixture
@@ -24,6 +29,11 @@ def user() -> User:
             "public_repos": 4,
         }
     )
+
+
+@pytest.fixture
+def avatar_uri() -> str:
+    return TINY_PNG
 
 
 @pytest.fixture
@@ -56,4 +66,42 @@ def repos(repo_factory):
         repo_factory("beta", "Python", {"Python": 400}),
         repo_factory("gamma", "Rust", {"Rust": 1200}, stars=5),
         repo_factory("delta", None, {}),
+    ]
+
+
+@pytest.fixture
+def commits() -> list[Commit]:
+    return [
+        Commit(
+            repo="tester/alpha",
+            repo_name="alpha",
+            sha="a" * 40,
+            url="https://github.com/tester/alpha/commit/" + "a" * 40,
+            message="Add orbit maths",
+            committed_at="2026-11-10T12:00:00Z",
+        ),
+        Commit(
+            repo="tester/alpha",
+            repo_name="alpha",
+            sha="b" * 40,
+            url="https://github.com/tester/alpha/commit/" + "b" * 40,
+            message="Older alpha commit",
+            committed_at="2026-11-08T12:00:00Z",
+        ),
+        Commit(
+            repo="tester/gamma",
+            repo_name="gamma",
+            sha="c" * 40,
+            url="https://github.com/tester/gamma/commit/" + "c" * 40,
+            message="Render rings",
+            committed_at="2026-11-09T12:00:00Z",
+        ),
+        Commit(
+            repo="tester/delta",
+            repo_name="delta",
+            sha="d" * 40,
+            url="https://github.com/tester/delta/commit/" + "d" * 40,
+            message="Unclassified commit",
+            committed_at="2026-11-07T12:00:00Z",
+        ),
     ]

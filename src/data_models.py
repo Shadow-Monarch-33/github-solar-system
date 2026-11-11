@@ -1,4 +1,4 @@
-"""Typed models for GitHub users, repositories and aggregated languages."""
+"""Typed models for GitHub users, repositories, languages and commits."""
 
 from __future__ import annotations
 
@@ -109,9 +109,59 @@ class Language:
         return self.bytes / 1024.0
 
 
+@dataclass(frozen=True)
+class Commit:
+    """A verified commit from a public repository.
+
+    ``repo`` is the ``owner/name`` full name, ``repo_name`` is the short
+    repository name shown beside the comet.
+    """
+
+    repo: str
+    repo_name: str
+    sha: str
+    url: str = ""
+    message: str = ""
+    committed_at: str = ""
+    author: str | None = None
+
+    @property
+    def identity(self) -> tuple[str, str]:
+        return (self.repo.lower(), self.sha.lower())
+
+    @classmethod
+    def from_api(cls, repo: str, payload: dict) -> "Commit":
+        commit = payload.get("commit") if isinstance(payload.get("commit"), dict) else {}
+        author = payload.get("author") if isinstance(payload.get("author"), dict) else {}
+        date = commit.get("author", {}).get("date") if isinstance(commit.get("author"), dict) else None
+        return cls(
+            repo=str(repo),
+            repo_name=str(repo).split("/")[-1],
+            sha=str(payload.get("sha") or ""),
+            url=str(payload.get("html_url") or ""),
+            message=str((commit.get("message") or "").split("\n")[0]),
+            committed_at=str(date or ""),
+            author=author.get("login"),
+        )
+
+    @classmethod
+    def from_fixture(cls, payload: dict) -> "Commit":
+        repo = str(payload.get("repo") or payload.get("full_name") or "")
+        return cls(
+            repo=repo,
+            repo_name=str(payload.get("repo_name") or repo.split("/")[-1]),
+            sha=str(payload.get("sha") or ""),
+            url=str(payload.get("html_url") or ""),
+            message=str(payload.get("message") or ""),
+            committed_at=str(payload.get("committed_at") or payload.get("date") or ""),
+            author=payload.get("author"),
+        )
+
+
 @dataclass
 class SolarSystem:
     user: User
     repositories: list[Repository]
     languages: list[Language]
     events: list[dict] = field(default_factory=list)
+    commits: list[Commit] = field(default_factory=list)

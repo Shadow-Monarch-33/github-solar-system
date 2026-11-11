@@ -6,6 +6,7 @@ import io
 import json
 import time
 import urllib.error
+from datetime import datetime, timezone
 from email.message import Message
 
 import pytest
@@ -236,3 +237,91 @@ def test_aggregate_languages_ignores_unclassified_repositories(repo_factory):
     languages = GitHubClient.aggregate_languages(repositories)
 
     assert [language.name for language in languages] == ["Python"]
+
+
+def test_get_commits_dedupes_and_orders_newest_first():
+    repo = Repository.from_api(
+        {
+            "name": "alpha",
+            "full_name": "tester/alpha",
+            "pushed_at": "2026-11-10T12:00:00Z",
+        }
+    )
+    payload = [
+        {
+            "sha": "a" * 40,
+            "html_url": "https://github.com/tester/alpha/commit/" + "a" * 40,
+            "commit": {
+                "message": "Newer",
+                "author": {"date": "2026-11-10T12:00:00Z"},
+            },
+            "author": {"login": "tester"},
+        },
+        {
+            "sha": "b" * 40,
+            "html_url": "https://github.com/tester/alpha/commit/" + "b" * 40,
+            "commit": {
+                "message": "Older",
+                "author": {"date": "2026-11-09T12:00:00Z"},
+            },
+            "author": {"login": "tester"},
+        },
+        {
+            "sha": "a" * 40,
+            "html_url": "https://github.com/tester/alpha/commit/" + "a" * 40,
+            "commit": {
+                "message": "Newer duplicate",
+                "author": {"date": "2026-11-10T12:00:00Z"},
+            },
+            "author": {"login": "tester"},
+        },
+    ]
+    client = make_client([payload])
+
+    commits = client.get_commits(
+        [repo], now=datetime(2026, 11, 11, tzinfo=timezone.utc)
+    )
+
+    assert [commit.sha for commit in commits] == ["a" * 40, "b" * 40]
+    assert commits[0].message == "Newer"
+    assert commits[0].repo_name == "alpha"
+
+
+def test_get_commits_skips_repos_outside_the_lookback():
+    repo = Repository.from_api(
+        {
+            "name": "old",
+            "full_name": "tester/old",
+            "pushed_at": "2026-01-01T00:00:00Z",
+        }
+    )
+    client = make_client([])
+
+    commits = client.get_commits(
+        [repo],
+        lookback_days=7,
+        now=datetime(2026, 11, 11, tzinfo=timezone.utc),
+    )
+
+    assert commits == []
+    assert client.calls == []
+
+
+def test_get_avatar_fetches_image_bytes():
+    headers = Message()
+    headers["Content-Type"] = "image/png"
+    client = make_client([FakeResponse(b"\x89PNG\r\n\x1a\nabc", headers=headers)])
+
+    data = client.get_avatar("https://avatars.githubusercontent.com/u/1?v=4")
+
+    assert data.startswith(b"\x89PNG")
+    assert "s=256" in client.calls[0]
+
+
+def test_get_avatar_rejects_non_image_payloads():
+    headers = Message()
+    headers["Content-Type"] = "application/json"
+    client = make_client([FakeResponse(b"{}", headers=headers)])
+
+    with pytest.raises(GitHubError):
+        client.get_avatar("https://avatars.githubusercontent.com/u/1?v=4")

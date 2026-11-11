@@ -5,113 +5,384 @@
     "avatar_url": "https://avatars.githubusercontent.com/u/293586478?v=4",
     "html_url": "https://github.com/Shadow-Monarch-33",
     "name": "Shadow Monarch",
+    "company": null,
+    "blog": "",
+    "location": null,
     "bio": "\"The real risk is not taking any risk\"",
-    "public_repos": 7,
+    "public_repos": 8,
     "followers": 2,
     "following": 3
   },
+  "avatar_file": "avatar.jpg",
   "repos": [
+    {
+      "name": "github-solar-system",
+      "full_name": "Shadow-Monarch-33/github-solar-system",
+      "html_url": "https://github.com/Shadow-Monarch-33/github-solar-system",
+      "description": null,
+      "language": "Python",
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "size": 0,
+      "fork": false,
+      "archived": false,
+      "created_at": "2026-11-11T11:03:37Z",
+      "pushed_at": "2026-11-11T11:03:49Z",
+      "updated_at": "2026-11-11T11:03:53Z",
+      "default_branch": "main",
+      "id": 1453866825,
+      "language_bytes": {
+        "Python": 89720
+      }
+    },
     {
       "name": "PlateCost",
       "full_name": "Shadow-Monarch-33/PlateCost",
       "html_url": "https://github.com/Shadow-Monarch-33/PlateCost",
-      "description": "Cost-aware recipe planning",
+      "description": "PlateCost is a work-in-progress food costing and profitability platform for small food businesses, built with Next.js, TypeScript, and Supabase. Manage ingredients, calculate recipe costs, and analyze menu profitability. (In beta))",
       "language": "TypeScript",
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "size": 287,
+      "fork": false,
+      "archived": false,
+      "created_at": "2026-10-01T12:47:56Z",
+      "pushed_at": "2026-11-10T20:27:00Z",
+      "updated_at": "2026-11-10T22:01:14Z",
+      "default_branch": "main",
+      "id": 1399971615,
       "language_bytes": {
         "TypeScript": 277002,
         "JavaScript": 31865,
         "PLpgSQL": 19832,
         "CSS": 2413
-      },
-      "stargazers_count": 0,
-      "size": 287,
-      "default_branch": "main",
-      "pushed_at": "2026-10-18T20:14:11Z"
+      }
     },
     {
       "name": "Shadow-Monarch-33",
       "full_name": "Shadow-Monarch-33/Shadow-Monarch-33",
       "html_url": "https://github.com/Shadow-Monarch-33/Shadow-Monarch-33",
-      "description": "Profile repository",
+      "description": null,
       "language": null,
-      "language_bytes": {},
       "stargazers_count": 0,
-      "size": 2181
+      "forks_count": 0,
+      "size": 2181,
+      "fork": false,
+      "archived": false,
+      "created_at": "2026-09-19T14:08:55Z",
+      "pushed_at": "2026-11-10T20:15:21Z",
+      "updated_at": "2026-11-10T21:46:59Z",
+      "default_branch": "main",
+      "id": 1377230427,
+      "language_bytes": {}
     },
     {
       "name": "Casefile-042",
       "full_name": "Shadow-Monarch-33/Casefile-042",
       "html_url": "https://github.com/Shadow-Monarch-33/Casefile-042",
-      "description": "A small case file reader",
+      "description": "CASEFILE #42 is an interactive detective mystery built with Python, CustomTkinter, and SQLite. Interrogate suspects, analyze evidence, uncover contradictions, and piece together the truth. Currently in beta.",
       "language": "Python",
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "size": 2015,
+      "fork": false,
+      "archived": false,
+      "created_at": "2026-08-24T14:14:46Z",
+      "pushed_at": "2026-11-10T20:04:36Z",
+      "updated_at": "2026-11-10T21:50:45Z",
+      "default_branch": "main",
+      "id": 1345035232,
       "language_bytes": {
         "Python": 229560
-      },
-      "stargazers_count": 0,
-      "size": 2015
+      }
     },
     {
       "name": "Slack-Bot",
       "full_name": "Shadow-Monarch-33/Slack-Bot",
       "html_url": "https://github.com/Shadow-Monarch-33/Slack-Bot",
-      "description": "Slack automation",
+      "description": null,
       "language": "Ruby",
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "size": 9,
+      "fork": false,
+      "archived": false,
+      "created_at": "2026-08-27T14:27:35Z",
+      "pushed_at": "2026-11-10T19:11:51Z",
+      "updated_at": "2026-11-10T21:43:25Z",
+      "default_branch": "main",
+      "id": 1348583654,
       "language_bytes": {
         "Ruby": 8512
-      },
-      "stargazers_count": 0,
-      "size": 9
+      }
     },
     {
       "name": "Eclipse-Theme",
       "full_name": "Shadow-Monarch-33/Eclipse-Theme",
       "html_url": "https://github.com/Shadow-Monarch-33/Eclipse-Theme",
-      "description": "Eclipse inspired theme",
+      "description": "Three different themes all featuring a different kind of eclipse \u2728",
       "language": null,
-      "language_bytes": {},
       "stargazers_count": 4,
-      "size": 15134
+      "forks_count": 0,
+      "size": 15134,
+      "fork": false,
+      "archived": false,
+      "created_at": "2026-09-03T22:23:20Z",
+      "pushed_at": "2026-09-26T23:13:19Z",
+      "updated_at": "2026-10-28T15:17:54Z",
+      "default_branch": "main",
+      "id": 1356482153,
+      "language_bytes": {}
     },
     {
       "name": "Axiom-Generative-LLM-Client",
       "full_name": "Shadow-Monarch-33/Axiom-Generative-LLM-Client",
       "html_url": "https://github.com/Shadow-Monarch-33/Axiom-Generative-LLM-Client",
-      "description": "Generative LLM client",
+      "description": "A simple desktop AI assistant built as a school project using Python, CustomTkinter, MySQL, and the Groq API. A basic implementation with no encryption, intended solely for academic purposes and not production use.",
       "language": "Python",
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "size": 12,
+      "fork": false,
+      "archived": false,
+      "created_at": "2026-08-31T12:20:49Z",
+      "pushed_at": "2026-08-31T13:37:24Z",
+      "updated_at": "2026-11-10T20:18:09Z",
+      "default_branch": "main",
+      "id": 1352378747,
       "language_bytes": {
         "Python": 27744
-      },
-      "stargazers_count": 0,
-      "size": 12
+      }
     },
     {
       "name": "Web-Scraper",
       "full_name": "Shadow-Monarch-33/Web-Scraper",
       "html_url": "https://github.com/Shadow-Monarch-33/Web-Scraper",
-      "description": "A small scraper",
+      "description": "Python web scraper for extracting news article content and metadata.",
       "language": "Python",
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "size": 2,
+      "fork": false,
+      "archived": false,
+      "created_at": "2026-08-11T18:25:48Z",
+      "pushed_at": "2026-08-11T18:26:22Z",
+      "updated_at": "2026-08-11T18:26:30Z",
+      "default_branch": "main",
+      "id": 1331234463,
       "language_bytes": {
         "Python": 1739
-      },
-      "stargazers_count": 0,
-      "size": 2
+      }
     }
   ],
-  "events": [
+  "commits": [
     {
-      "type": "PushEvent",
-      "repo": {"name": "Shadow-Monarch-33/Casefile-042"},
-      "created_at": "2026-11-09T18:22:00Z"
+      "repo": "Shadow-Monarch-33/github-solar-system",
+      "repo_name": "github-solar-system",
+      "sha": "c6211f12e574f76f2b4a887ed26c38b9a2d208f8",
+      "html_url": "https://github.com/Shadow-Monarch-33/github-solar-system/commit/c6211f12e574f76f2b4a887ed26c38b9a2d208f8",
+      "message": "feat: build automated GitHub solar system visualizer",
+      "committed_at": "2026-11-11T11:02:50Z",
+      "author": "Shadow-Monarch-33"
     },
     {
-      "type": "PushEvent",
-      "repo": {"name": "Shadow-Monarch-33/PlateCost"},
-      "created_at": "2026-11-08T14:05:00Z"
+      "repo": "Shadow-Monarch-33/PlateCost",
+      "repo_name": "PlateCost",
+      "sha": "48752edb7b08e6c7e3f1f78203aedce9f4cddb4d",
+      "html_url": "https://github.com/Shadow-Monarch-33/PlateCost/commit/48752edb7b08e6c7e3f1f78203aedce9f4cddb4d",
+      "message": "Update README.md",
+      "committed_at": "2026-11-10T20:26:59Z",
+      "author": "Shadow-Monarch-33"
     },
     {
-      "type": "PushEvent",
-      "repo": {"name": "Shadow-Monarch-33/Casefile-042"},
-      "created_at": "2026-11-07T09:41:00Z"
+      "repo": "Shadow-Monarch-33/Shadow-Monarch-33",
+      "repo_name": "Shadow-Monarch-33",
+      "sha": "08c3a4446dde8150c151392253645a5f0961f738",
+      "html_url": "https://github.com/Shadow-Monarch-33/Shadow-Monarch-33/commit/08c3a4446dde8150c151392253645a5f0961f738",
+      "message": "Update README.md",
+      "committed_at": "2026-11-10T20:15:21Z",
+      "author": "Shadow-Monarch-33"
+    },
+    {
+      "repo": "Shadow-Monarch-33/Casefile-042",
+      "repo_name": "Casefile-042",
+      "sha": "dc9774baac6b00cf8c570cfb8569f96e9b9685e1",
+      "html_url": "https://github.com/Shadow-Monarch-33/Casefile-042/commit/dc9774baac6b00cf8c570cfb8569f96e9b9685e1",
+      "message": "Update README.md",
+      "committed_at": "2026-11-10T20:04:36Z",
+      "author": "Shadow-Monarch-33"
+    },
+    {
+      "repo": "Shadow-Monarch-33/Casefile-042",
+      "repo_name": "Casefile-042",
+      "sha": "dd7c577a385163a5c039578cbb0eb2c54ad3bcdc",
+      "html_url": "https://github.com/Shadow-Monarch-33/Casefile-042/commit/dd7c577a385163a5c039578cbb0eb2c54ad3bcdc",
+      "message": "Migrate CASEFILE #42 from MySQL to SQLite",
+      "committed_at": "2026-11-10T19:57:51Z",
+      "author": "Shadow-Monarch-33"
+    },
+    {
+      "repo": "Shadow-Monarch-33/Casefile-042",
+      "repo_name": "Casefile-042",
+      "sha": "bc9d736495582e919be121deb4ddb659ae2fb412",
+      "html_url": "https://github.com/Shadow-Monarch-33/Casefile-042/commit/bc9d736495582e919be121deb4ddb659ae2fb412",
+      "message": "Update README.md",
+      "committed_at": "2026-11-10T19:44:13Z",
+      "author": "Shadow-Monarch-33"
+    },
+    {
+      "repo": "Shadow-Monarch-33/Casefile-042",
+      "repo_name": "Casefile-042",
+      "sha": "29cf911eeb974d52347df6aa51719813b7fb9e45",
+      "html_url": "https://github.com/Shadow-Monarch-33/Casefile-042/commit/29cf911eeb974d52347df6aa51719813b7fb9e45",
+      "message": "Update .gitignore",
+      "committed_at": "2026-11-10T19:28:49Z",
+      "author": "Shadow-Monarch-33"
+    },
+    {
+      "repo": "Shadow-Monarch-33/Casefile-042",
+      "repo_name": "Casefile-042",
+      "sha": "da0e326f9058e1b9f5a9c8c3897a48242b9ef2ac",
+      "html_url": "https://github.com/Shadow-Monarch-33/Casefile-042/commit/da0e326f9058e1b9f5a9c8c3897a48242b9ef2ac",
+      "message": "Update setup_database.py",
+      "committed_at": "2026-11-10T19:28:01Z",
+      "author": "Shadow-Monarch-33"
+    },
+    {
+      "repo": "Shadow-Monarch-33/Casefile-042",
+      "repo_name": "Casefile-042",
+      "sha": "09e56e261e9541586126bdc7a774731d4b4a1050",
+      "html_url": "https://github.com/Shadow-Monarch-33/Casefile-042/commit/09e56e261e9541586126bdc7a774731d4b4a1050",
+      "message": "Refactor get_connection function for better config",
+      "committed_at": "2026-11-10T19:24:54Z",
+      "author": "Shadow-Monarch-33"
+    },
+    {
+      "repo": "Shadow-Monarch-33/Casefile-042",
+      "repo_name": "Casefile-042",
+      "sha": "66b28983ea1c6c566b49156b3151f08f2a88e4a0",
+      "html_url": "https://github.com/Shadow-Monarch-33/Casefile-042/commit/66b28983ea1c6c566b49156b3151f08f2a88e4a0",
+      "message": "Update requirements.txt",
+      "committed_at": "2026-11-10T19:24:29Z",
+      "author": "Shadow-Monarch-33"
+    },
+    {
+      "repo": "Shadow-Monarch-33/Shadow-Monarch-33",
+      "repo_name": "Shadow-Monarch-33",
+      "sha": "4f1dcab3102ec3e80a661888d61ad5069a5999cf",
+      "html_url": "https://github.com/Shadow-Monarch-33/Shadow-Monarch-33/commit/4f1dcab3102ec3e80a661888d61ad5069a5999cf",
+      "message": "Update images and content in README.md",
+      "committed_at": "2026-11-10T19:21:37Z",
+      "author": "Shadow-Monarch-33"
+    },
+    {
+      "repo": "Shadow-Monarch-33/Slack-Bot",
+      "repo_name": "Slack-Bot",
+      "sha": "712690db797d5abcbe1329951b7e47b21e50e287",
+      "html_url": "https://github.com/Shadow-Monarch-33/Slack-Bot/commit/712690db797d5abcbe1329951b7e47b21e50e287",
+      "message": "feat: complete Slack water reminder bot setup and improve reliability",
+      "committed_at": "2026-11-10T19:11:49Z",
+      "author": "Shadow-Monarch-33"
+    },
+    {
+      "repo": "Shadow-Monarch-33/Shadow-Monarch-33",
+      "repo_name": "Shadow-Monarch-33",
+      "sha": "65a219fcd0a2e221975d8f107f451839b654ce4a",
+      "html_url": "https://github.com/Shadow-Monarch-33/Shadow-Monarch-33/commit/65a219fcd0a2e221975d8f107f451839b654ce4a",
+      "message": "Update README.md",
+      "committed_at": "2026-11-09T15:58:34Z",
+      "author": "Shadow-Monarch-33"
+    },
+    {
+      "repo": "Shadow-Monarch-33/Shadow-Monarch-33",
+      "repo_name": "Shadow-Monarch-33",
+      "sha": "4c2f0169bf8db0876a3cf310903aca12e059a5ca",
+      "html_url": "https://github.com/Shadow-Monarch-33/Shadow-Monarch-33/commit/4c2f0169bf8db0876a3cf310903aca12e059a5ca",
+      "message": "Delete assets/Think Come On Sticker.gif",
+      "committed_at": "2026-11-09T09:06:51Z",
+      "author": "Shadow-Monarch-33"
+    },
+    {
+      "repo": "Shadow-Monarch-33/Shadow-Monarch-33",
+      "repo_name": "Shadow-Monarch-33",
+      "sha": "8519ada460d36b04d27e4689c41fbd26b4c8e485",
+      "html_url": "https://github.com/Shadow-Monarch-33/Shadow-Monarch-33/commit/8519ada460d36b04d27e4689c41fbd26b4c8e485",
+      "message": "Add files via upload",
+      "committed_at": "2026-11-09T09:04:00Z",
+      "author": "Shadow-Monarch-33"
+    },
+    {
+      "repo": "Shadow-Monarch-33/Shadow-Monarch-33",
+      "repo_name": "Shadow-Monarch-33",
+      "sha": "000db70ec1c794ff05c9ea1cd151655cf7a2ed76",
+      "html_url": "https://github.com/Shadow-Monarch-33/Shadow-Monarch-33/commit/000db70ec1c794ff05c9ea1cd151655cf7a2ed76",
+      "message": "Revise README.md content and formatting",
+      "committed_at": "2026-11-09T09:03:23Z",
+      "author": "Shadow-Monarch-33"
+    },
+    {
+      "repo": "Shadow-Monarch-33/Shadow-Monarch-33",
+      "repo_name": "Shadow-Monarch-33",
+      "sha": "dc94dcc4ebeb24de718ff0349c9758fb80f74a81",
+      "html_url": "https://github.com/Shadow-Monarch-33/Shadow-Monarch-33/commit/dc94dcc4ebeb24de718ff0349c9758fb80f74a81",
+      "message": "Delete oddlore.png",
+      "committed_at": "2026-11-09T08:31:28Z",
+      "author": "Shadow-Monarch-33"
+    },
+    {
+      "repo": "Shadow-Monarch-33/Shadow-Monarch-33",
+      "repo_name": "Shadow-Monarch-33",
+      "sha": "efbcfce0375fb9d68763cbf2123aeac862ff8923",
+      "html_url": "https://github.com/Shadow-Monarch-33/Shadow-Monarch-33/commit/efbcfce0375fb9d68763cbf2123aeac862ff8923",
+      "message": "Delete aperm.png",
+      "committed_at": "2026-11-09T08:31:21Z",
+      "author": "Shadow-Monarch-33"
+    },
+    {
+      "repo": "Shadow-Monarch-33/Shadow-Monarch-33",
+      "repo_name": "Shadow-Monarch-33",
+      "sha": "458ca1d41ded78fe937582fbde2f32ba20c7e934",
+      "html_url": "https://github.com/Shadow-Monarch-33/Shadow-Monarch-33/commit/458ca1d41ded78fe937582fbde2f32ba20c7e934",
+      "message": "Delete assets/.gitkeep",
+      "committed_at": "2026-11-09T08:31:08Z",
+      "author": "Shadow-Monarch-33"
+    },
+    {
+      "repo": "Shadow-Monarch-33/Shadow-Monarch-33",
+      "repo_name": "Shadow-Monarch-33",
+      "sha": "f89121543d478d210f513154e5e131cb0187488b",
+      "html_url": "https://github.com/Shadow-Monarch-33/Shadow-Monarch-33/commit/f89121543d478d210f513154e5e131cb0187488b",
+      "message": "Revise README content and structure",
+      "committed_at": "2026-11-09T08:30:36Z",
+      "author": "Shadow-Monarch-33"
+    },
+    {
+      "repo": "Shadow-Monarch-33/Shadow-Monarch-33",
+      "repo_name": "Shadow-Monarch-33",
+      "sha": "d31ea21432f415ed245df0505fbb2090fc951f0e",
+      "html_url": "https://github.com/Shadow-Monarch-33/Shadow-Monarch-33/commit/d31ea21432f415ed245df0505fbb2090fc951f0e",
+      "message": "Add files via upload",
+      "committed_at": "2026-11-09T07:57:20Z",
+      "author": "Shadow-Monarch-33"
+    },
+    {
+      "repo": "Shadow-Monarch-33/Shadow-Monarch-33",
+      "repo_name": "Shadow-Monarch-33",
+      "sha": "0a0c760d6303f1aa7819a7c25563b4e77da09ac3",
+      "html_url": "https://github.com/Shadow-Monarch-33/Shadow-Monarch-33/commit/0a0c760d6303f1aa7819a7c25563b4e77da09ac3",
+      "message": "Create assets folder",
+      "committed_at": "2026-11-09T07:56:19Z",
+      "author": "Shadow-Monarch-33"
+    },
+    {
+      "repo": "Shadow-Monarch-33/Shadow-Monarch-33",
+      "repo_name": "Shadow-Monarch-33",
+      "sha": "e5976c5dd00e9045ef644fe9d40bed26102a51be",
+      "html_url": "https://github.com/Shadow-Monarch-33/Shadow-Monarch-33/commit/e5976c5dd00e9045ef644fe9d40bed26102a51be",
+      "message": "Add files via upload",
+      "committed_at": "2026-11-09T07:55:13Z",
+      "author": "Shadow-Monarch-33"
     }
-  ]
+  ],
+  "events": []
 }

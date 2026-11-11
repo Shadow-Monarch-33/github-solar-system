@@ -8,10 +8,16 @@ from pathlib import Path
 
 import pytest
 
-from generate import _comet_count, load_fixture, main
+from generate import load_fixture, main
+
+TINY_PNG = (
+    "data:image/png;base64,"
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PzWvWQAAAABJRU5ErkJggg=="
+)
 
 FIXTURE = {
     "user": {"login": "tester", "name": "Test User", "bio": "Testing things"},
+    "avatar_data_uri": TINY_PNG,
     "repos": [
         {
             "name": "alpha",
@@ -29,11 +35,23 @@ FIXTURE = {
             "language_bytes": {},
         },
     ],
-    "events": [
-        {"type": "PushEvent", "repo": {"name": "tester/alpha"}},
-        {"type": "PushEvent", "repo": {"name": "tester/alpha"}},
-        {"type": "PushEvent", "repo": {"name": "tester/beta"}},
-        {"type": "WatchEvent", "repo": {"name": "someone/else"}},
+    "commits": [
+        {
+            "repo": "tester/alpha",
+            "repo_name": "alpha",
+            "sha": "a" * 40,
+            "html_url": "https://github.com/tester/alpha/commit/" + "a" * 40,
+            "message": "Add orbits",
+            "committed_at": "2026-11-10T12:00:00Z",
+        },
+        {
+            "repo": "tester/alpha",
+            "repo_name": "alpha",
+            "sha": "b" * 40,
+            "html_url": "https://github.com/tester/alpha/commit/" + "b" * 40,
+            "message": "Older",
+            "committed_at": "2026-11-08T12:00:00Z",
+        },
     ],
 }
 
@@ -58,27 +76,49 @@ def test_fixture_mode_writes_svg(tmp_path):
     assert "animateMotion" not in svg
 
 
-def test_fixture_loader_parses_repositories(tmp_path):
+def test_fixture_loader_parses_repositories_commits_and_avatar(tmp_path):
     fixture = write_fixture(tmp_path)
 
-    user, repositories, events = load_fixture(str(fixture))
+    data = load_fixture(str(fixture))
 
-    assert user.login == "tester"
-    assert [repository.name for repository in repositories] == ["alpha", "beta"]
-    assert repositories[0].primary_language == "Python"
-    assert repositories[1].primary_language is None
-    assert len(events) == 4
-
-
-def test_comet_count_uses_distinct_push_repositories():
-    events = [{"type": "PushEvent", "repo": {"name": f"tester/repo-{index}"}} for index in range(10)]
-
-    assert _comet_count(events, True) == 3
-    assert _comet_count(events, False) == 0
-    assert _comet_count([{"type": "WatchEvent", "repo": {"name": "a/b"}}], True) == 0
+    assert data.user.login == "tester"
+    assert [repository.name for repository in data.repositories] == ["alpha", "beta"]
+    assert data.repositories[0].primary_language == "Python"
+    assert data.repositories[1].primary_language is None
+    assert len(data.commits) == 2
+    assert data.avatar_uri == TINY_PNG
 
 
-def test_fixture_mode_renders_comets(tmp_path):
+def test_fixture_loader_reads_events_with_commit_payloads(tmp_path):
+    payload = {
+        "user": {"login": "tester"},
+        "repos": [{"name": "alpha", "full_name": "tester/alpha", "language": "Python"}],
+        "events": [
+            {
+                "type": "PushEvent",
+                "repo": {"name": "tester/alpha"},
+                "payload": {
+                    "commits": [
+                        {
+                            "sha": "e" * 40,
+                            "message": "From event",
+                            "url": "https://github.com/tester/alpha/commit/" + "e" * 40,
+                            "date": "2026-11-10T12:00:00Z",
+                        }
+                    ]
+                },
+            }
+        ],
+    }
+    fixture = write_fixture(tmp_path, payload)
+
+    data = load_fixture(str(fixture))
+
+    assert len(data.commits) == 1
+    assert data.commits[0].repo == "tester/alpha"
+
+
+def test_fixture_mode_renders_comets_and_avatar(tmp_path):
     fixture = write_fixture(tmp_path)
     output = tmp_path / "solar.svg"
 
@@ -86,16 +126,30 @@ def test_fixture_mode_renders_comets(tmp_path):
 
     svg = output.read_text(encoding="utf-8")
     assert "animateMotion" in svg
+    assert 'class="comet"' in svg
+    assert TINY_PNG in svg
 
 
-def test_no_comets_flag_removes_animation(tmp_path):
+def test_no_comets_flag_removes_comet_scene(tmp_path):
     fixture = write_fixture(tmp_path)
     output = tmp_path / "solar.svg"
 
     assert main(["--fixture", str(fixture), "--output", str(output), "--no-comets"]) == 0
 
     svg = output.read_text(encoding="utf-8")
-    assert "animateMotion" not in svg
+    assert 'class="comet"' not in svg
+    assert 'class="comet-static"' not in svg
+
+
+def test_no_avatar_flag_uses_fallback_sun(tmp_path):
+    fixture = write_fixture(tmp_path)
+    output = tmp_path / "solar.svg"
+
+    assert main(["--fixture", str(fixture), "--output", str(output), "--no-avatar"]) == 0
+
+    svg = output.read_text(encoding="utf-8")
+    assert "<image" not in svg
+    assert "url(#sunFallback)" in svg
 
 
 def test_theme_and_size_options(tmp_path):
@@ -116,6 +170,10 @@ def test_theme_and_size_options(tmp_path):
             "540",
             "--star-density",
             "low",
+            "--max-comets",
+            "1",
+            "--commit-lookback-days",
+            "3",
         ]
     )
 
@@ -133,7 +191,11 @@ def test_bundled_sample_fixture_renders(tmp_path):
     svg = output.read_text(encoding="utf-8")
     ElementTree.fromstring(svg)
     assert "Shadow-Monarch-33" in svg
-    assert "REPOSITORIES" in svg
+    assert "data:image/jpeg;base64," in svg
+    assert "REPOSITORIES" not in svg
+    assert "GitHub Solar System" not in svg
+    assert "Python" in svg
+    assert "TypeScript" in svg
 
 
 def test_missing_user_object_is_reported(tmp_path):
@@ -164,4 +226,14 @@ def test_invalid_dimensions_exit_with_usage_error():
     with pytest.raises(SystemExit) as info:
         main(["--username", "someone", "--output", "out.svg", "--width", "100"])
 
+    assert info.value.code == 2
+
+
+def test_invalid_commit_options_exit_with_usage_error():
+    with pytest.raises(SystemExit) as info:
+        main(["--username", "someone", "--output", "out.svg", "--commit-lookback-days", "0"])
+    assert info.value.code == 2
+
+    with pytest.raises(SystemExit) as info:
+        main(["--username", "someone", "--output", "out.svg", "--max-comets", "-1"])
     assert info.value.code == 2

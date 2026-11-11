@@ -85,3 +85,69 @@ def deterministic_color(key: str, palette: list[str]) -> str:
     if not palette:
         raise ValueError("palette must not be empty")
     return palette[deterministic_index(key, len(palette))]
+
+
+# GitHub's linguist palette for the languages this tool is likely to meet.
+# Unknown languages fall back to the theme's curated palette.
+LANGUAGE_COLORS: dict[str, str] = {
+    "1c enterprise": "#814CCC",
+    "abap": "#E8274B",
+    "apex": "#1797c0",
+    "assembly": "#6E4C13",
+    "astro": "#ff5a03",
+    "c": "#555555",
+    "c#": "#178600",
+    "c++": "#F34B7D",
+    "clojure": "#db5855",
+    "cmake": "#DA3434",
+    "css": "#563D7C",
+    "dart": "#00B4AB",
+    "dockerfile": "#384d54",
+    "elixir": "#6e4a7e",
+    "elm": "#60B5CC",
+    "erlang": "#B83998",
+    "f#": "#b845fc",
+    "go": "#00ADD8",
+    "graphql": "#e10098",
+    "haskell": "#5e5086",
+    "html": "#E34C26",
+    "java": "#B07219",
+    "javascript": "#F1E05A",
+    "julia": "#a270ba",
+    "jupyter notebook": "#DA5B0B",
+    "kotlin": "#A97BFF",
+    "lua": "#000080",
+    "makefile": "#427819",
+    "markdown": "#083fa1",
+    "mdx": "#fcb32c",
+    "nim": "#ffc200",
+    "nix": "#7e7eff",
+    "objective-c": "#438eff",
+    "ocaml": "#ef7a08",
+    "perl": "#0298c3",
+    "php": "#4F5D95",
+    "plpgsql": "#336790",
+    "powershell": "#012456",
+    "python": "#3572A5",
+    "r": "#198CE7",
+    "ruby": "#701516",
+    "rust": "#DEA584",
+    "scala": "#c22d40",
+    "scss": "#c6538c",
+    "shell": "#89E051",
+    "solidity": "#AA6746",
+    "sql": "#e38c00",
+    "svelte": "#FF3E00",
+    "swift": "#F05138",
+    "tex": "#3D6117",
+    "typescript": "#3178C6",
+    "vim script": "#199f4b",
+    "vue": "#41B883",
+    "zig": "#ec915c",
+}
+
+
+def language_color(name: str, fallback: str) -> str:
+    """Return the linguist color for a language, or a theme fallback."""
+
+    return LANGUAGE_COLORS.get(str(name).strip().lower(), fallback)

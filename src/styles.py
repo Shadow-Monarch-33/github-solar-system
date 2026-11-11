@@ -8,8 +8,8 @@ DEFAULT_THEME = "nebula"
 
 THEMES: dict[str, dict[str, object]] = {
     "nebula": {
-        "background_top": "#050816",
-        "background_bottom": "#0b1026",
+        "background_top": "#03040A",
+        "background_bottom": "#070B18",
         "star": "#ffffff",
         "orbit": "#8ea0c9",
         "text": "#eef2ff",
@@ -34,8 +34,8 @@ THEMES: dict[str, dict[str, object]] = {
         ],
     },
     "midnight": {
-        "background_top": "#01030a",
-        "background_bottom": "#071224",
+        "background_top": "#02030A",
+        "background_bottom": "#06101F",
         "star": "#dbeafe",
         "orbit": "#64748b",
         "text": "#e2e8f0",

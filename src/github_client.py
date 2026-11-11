@@ -9,13 +9,31 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timedelta, timezone
 
-from .data_models import Language, Repository, User
+from .data_models import Commit, Language, Repository, User
 
 API_ROOT = "https://api.github.com"
 DEFAULT_USER_AGENT = "github-solar-system"
 API_VERSION = "2022-11-28"
 MAX_RATE_LIMIT_WAIT = 60.0
+DEFAULT_COMMIT_LOOKBACK_DAYS = 7
+MAX_AVATAR_BYTES = 2 * 1024 * 1024
+
+
+def _parse_iso(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    text = str(value).strip()
+    if text.endswith("Z"):
+        text = text[:-1] + "+00:00"
+    try:
+        parsed = datetime.fromisoformat(text)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
 
 
 class GitHubError(RuntimeError):
@@ -247,6 +265,147 @@ class GitHubClient:
         wanted = max(1, min(100, int(max_events)))
         raw = self._paginate(path, {"per_page": wanted}, max_pages=max_pages)
         return raw[: max(0, int(max_events))]
+
+    def get_avatar(self, avatar_url: str, *, size: int = 256) -> bytes:
+        """Fetch a public avatar image and return its bytes.
+
+        GitHub's avatar CDN can resize on request, so the embedded image stays
+        small without requiring an image library in the generator.
+        """
+
+        if not avatar_url:
+            raise GitHubError("no avatar URL was provided")
+        url = avatar_url
+        if "avatars.githubusercontent.com" in url:
+            separator = "&" if "?" in url else "?"
+            if "s=" not in url:
+                url = f"{url}{separator}s={max(64, min(512, int(size)))}"
+        request = urllib.request.Request(
+            url,
+            headers={
+                "Accept": "image/avif,image/webp,image/png,image/jpeg,image/*",
+                "User-Agent": self.user_agent,
+            },
+        )
+        attempts = self.max_retries + 1
+        last_error: Exception | None = None
+        for attempt in range(attempts):
+            try:
+                with self._open(request) as response:
+                    data = response.read()
+                    content_type = response.headers.get("Content-Type", "")
+            except urllib.error.HTTPError as exc:
+                try:
+                    exc.read()
+                    exc.close()
+                except Exception:
+                    pass
+                last_error = exc
+                if attempt == attempts - 1:
+                    raise GitHubError(
+                        f"avatar request failed ({exc.code})", exc.code, url
+                    ) from exc
+                if exc.code >= 500:
+                    self._backoff(attempt)
+                    continue
+                raise GitHubError(
+                    f"avatar request failed ({exc.code})", exc.code, url
+                ) from exc
+            except (urllib.error.URLError, TimeoutError, ConnectionError, socket.timeout) as exc:
+                last_error = exc
+                if attempt == attempts - 1:
+                    raise GitHubError(f"avatar request failed: {exc}", None, url) from exc
+                self._backoff(attempt)
+                continue
+            else:
+                if not data:
+                    raise GitHubError("avatar response was empty", None, url)
+                if len(data) > MAX_AVATAR_BYTES:
+                    raise GitHubError("avatar image was too large", None, url)
+                if content_type and not content_type.lower().startswith("image/"):
+                    raise GitHubError(
+                        f"avatar response was not an image ({content_type})", None, url
+                    )
+                return data
+        raise GitHubError(f"avatar request failed: {last_error}", None, url)
+
+    def get_commits(
+        self,
+        repositories: list[Repository],
+        *,
+        lookback_days: int = DEFAULT_COMMIT_LOOKBACK_DAYS,
+        now: datetime | None = None,
+        max_repos: int = 20,
+        max_commits: int = 80,
+        max_workers: int = 6,
+    ) -> list[Commit]:
+        """Fetch recent commits from the supplied repositories.
+
+        Each repository contributes commits from the lookback window. Results
+        are deduplicated by repository and SHA, then ordered newest first.
+        """
+
+        if not repositories:
+            return []
+        reference = now or datetime.now(timezone.utc)
+        if reference.tzinfo is None:
+            reference = reference.replace(tzinfo=timezone.utc)
+        since = reference - timedelta(days=max(1, int(lookback_days)))
+        since_text = since.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+
+        targets: list[Repository] = []
+        for repository in repositories:
+            if repository.fork or repository.archived:
+                continue
+            pushed = _parse_iso(repository.pushed_at)
+            if pushed is not None and pushed < since:
+                continue
+            targets.append(repository)
+            if len(targets) >= max(1, int(max_repos)):
+                break
+        if not targets:
+            return []
+
+        def fetch(repository: Repository) -> list[Commit]:
+            path = (
+                f"/repos/{urllib.parse.quote(str(repository.full_name), safe='/')}/commits"
+            )
+            try:
+                payload, _ = self._request(
+                    path,
+                    {"since": since_text, "per_page": 100},
+                )
+            except GitHubError:
+                return []
+            if not isinstance(payload, list):
+                return []
+            commits: list[Commit] = []
+            for entry in payload:
+                if not isinstance(entry, dict):
+                    continue
+                commit = Commit.from_api(repository.full_name, entry)
+                if commit.sha:
+                    commits.append(commit)
+            return commits
+
+        workers = max(1, min(int(max_workers), len(targets)))
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            batches = list(executor.map(fetch, targets))
+
+        deduplicated: dict[tuple[str, str], Commit] = {}
+        for batch in batches:
+            for commit in batch:
+                deduplicated.setdefault(commit.identity, commit)
+        ordered = sorted(
+            deduplicated.values(),
+            key=lambda commit: (
+                commit.committed_at or "",
+                commit.repo.lower(),
+                commit.sha,
+            ),
+            reverse=True,
+        )
+        return ordered[: max(0, int(max_commits))]
 
     @staticmethod
     def aggregate_languages(repositories: list[Repository]) -> list[Language]:

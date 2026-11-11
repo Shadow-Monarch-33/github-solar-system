@@ -1,9 +1,8 @@
 """Deterministic orbital layout for the GitHub solar system.
 
-The layout is a pure function of its inputs: the same user, repositories,
-languages and options always produce byte-identical geometry. Planet sizes
-follow the square root of a language's byte share, and planets are placed on
-golden-angle orbits whose spacing reserves room for moon rings and labels.
+The layout is a pure function of its inputs. It stores absolute static
+positions for fallbacks and relative motion paths for nested SVG animation,
+so a planet can carry its moons while each moon also orbits its planet.
 """
 
 from __future__ import annotations
@@ -14,16 +13,21 @@ import random
 from dataclasses import dataclass
 from urllib.parse import quote
 
-from .data_models import Language, Repository, User
+from .colors import language_color, mix
+from .data_models import Commit, Language, Repository, User
 
 DEFAULT_WIDTH = 1200
 DEFAULT_HEIGHT = 675
 GOLDEN_ANGLE = 137.50776405003785
-STAR_DENSITY = {"off": 0, "low": 80, "normal": 160, "high": 260}
+STAR_DENSITY = {"off": 0, "low": 90, "normal": 170, "high": 280}
 MOONS_PER_RING = 12
 MIN_PLANET_RADIUS = 0.5
-LABEL_BUDGET = 16
-LEGEND_SIZE = 8
+MAX_PLANET_RADIUS = 34.0
+DEFAULT_COMET_LIMIT = 6
+ASPECT_CAP = 1.55
+COMET_FLIGHT = 8.0
+COMET_SLOT = 5.5
+COMET_MIN_CYCLE = 26.0
 
 
 @dataclass(frozen=True)
@@ -34,32 +38,36 @@ class Moon:
     stars: int
     radius: float
     orbit: float
-    angle: float
-
-
-@dataclass(frozen=True)
-class Label:
-    text: str
-    x: float
-    y: float
-    anchor: str
+    start_angle: float
+    static_x: float
+    static_y: float
+    path: str
+    period: float
+    begin: float
+    direction: int
+    color: str
+    label: str
+    label_radius: float
 
 
 @dataclass(frozen=True)
 class Planet:
     language: str
     url: str
-    x: float
-    y: float
     radius: float
-    reach: float
     orbit: float
-    angle: float
-    label: Label
+    start_angle: float
+    static_x: float
+    static_y: float
+    path: str
+    period: float
+    begin: float
+    direction: int
+    color: str
+    label: str
+    label_radius: float
     repo_count: int
     bytes: int
-    percent: float
-    percent_text: str
     moons: tuple[Moon, ...] = ()
 
 
@@ -69,41 +77,24 @@ class Star:
     y: float
     radius: float
     opacity: float
-    twinkle_delay: float
 
 
 @dataclass(frozen=True)
 class Comet:
-    path: str
-    duration: float
-    begin: float
-    origin_x: float
-    origin_y: float
+    repo: str
+    repo_name: str
+    sha: str
+    commit_url: str
+    label: str
+    start_x: float
+    start_y: float
+    end_x: float
+    end_y: float
+    cycle: float
+    window_start: float
+    flight: float
     static_x: float
     static_y: float
-    streak_x: float
-    streak_y: float
-
-
-@dataclass(frozen=True)
-class IndexEntry:
-    name: str
-    display: str
-    url: str
-    color_index: int
-
-
-@dataclass(frozen=True)
-class RepoIndex:
-    entries: tuple[IndexEntry, ...]
-    columns: int
-    rows: int
-    row_height: float
-    font_size: float
-    top: float
-    left: float
-    column_width: float
-    header: str
 
 
 @dataclass(frozen=True)
@@ -121,15 +112,24 @@ class SolarSystemLayout:
     planets: tuple[Planet, ...]
     stars: tuple[Star, ...]
     comets: tuple[Comet, ...]
-    repo_index: RepoIndex | None
+    avatar_uri: str
     title: str
-    subtitle: str
-    meta: str
+    description: str
 
 
 def _jitter(key: str) -> float:
     digest = hashlib.sha256(key.encode("utf-8")).digest()
     return int.from_bytes(digest[:8], "big") / 2**64
+
+
+def _seed(width: int, height: int, login: str) -> int:
+    digest = hashlib.sha256(f"{width}x{height}:{login}".encode("utf-8")).hexdigest()
+    return int(digest[:16], 16)
+
+
+def _seed_for(key: str) -> int:
+    digest = hashlib.sha256(key.encode("utf-8")).hexdigest()
+    return int(digest[:16], 16)
 
 
 def _num(value: float) -> str:
@@ -139,11 +139,6 @@ def _num(value: float) -> str:
 
 def _clamp(value: float, low: float, high: float) -> float:
     return max(low, min(high, value))
-
-
-def _seed(width: int, height: int, login: str) -> int:
-    digest = hashlib.sha256(f"{width}x{height}:{login}".encode("utf-8")).hexdigest()
-    return int(digest[:16], 16)
 
 
 def _truncate(text: str, limit: int) -> str:
@@ -157,80 +152,104 @@ def _truncate(text: str, limit: int) -> str:
 
 def _planet_radius(byte_count: int, max_bytes: int) -> float:
     if max_bytes <= 0:
-        return 6.0
+        return 8.0
     ratio = _clamp(byte_count / max_bytes, 0.0, 1.0)
-    return min(30.0, max(6.0, 6.0 + 24.0 * math.sqrt(ratio)))
+    return min(MAX_PLANET_RADIUS, max(8.0, 8.0 + 26.0 * math.sqrt(ratio)))
 
 
 def _moon_extent(moon_count: int) -> float:
     if moon_count <= 0:
         return 0.0
     rings = math.ceil(moon_count / MOONS_PER_RING)
-    return 6.0 + 4.5 * (rings - 1) + 2.4
+    return 30.0 + 12.0 * (rings - 1) + 4.0
+
+
+def _ellipse_motion_path(
+    rx: float,
+    ry: float,
+    start_x: float,
+    start_y: float,
+    cx: float,
+    cy: float,
+    direction: int,
+) -> str:
+    """Relative ellipse anchored at the planet's static position.
+
+    The group keeps ``translate(static_x, static_y)`` so a renderer that
+    ignores SMIL still places it correctly. The arc is centred on the sun in
+    that translated frame, so motion and fallback stay consistent.
+    """
+
+    span_x = 2.0 * (cx - start_x)
+    span_y = 2.0 * (cy - start_y)
+    sweep = 1 if direction >= 0 else 0
+    return (
+        f"M 0 0 A {_num(rx)} {_num(ry)} 0 0 {sweep} {_num(span_x)} {_num(span_y)} "
+        f"A {_num(rx)} {_num(ry)} 0 0 {sweep} 0 0"
+    )
+
+
+def _circle_motion_path(radius: float, start_angle: float, direction: int) -> str:
+    """Relative circle anchored at the moon's static position."""
+
+    sweep = 1 if direction >= 0 else 0
+    radians = math.radians(start_angle)
+    start_x = math.cos(radians) * radius
+    start_y = math.sin(radians) * radius
+    span_x = -2.0 * start_x
+    span_y = -2.0 * start_y
+    return (
+        f"M 0 0 A {_num(radius)} {_num(radius)} 0 0 {sweep} {_num(span_x)} {_num(span_y)} "
+        f"A {_num(radius)} {_num(radius)} 0 0 {sweep} 0 0"
+    )
 
 
 def _fit_orbits(
-    pairs: list[tuple[float, float]],
-    inner_orbit: float,
+    radii: list[float],
+    extents: list[float],
+    sun_radius: float,
     max_extent: float,
-    gap: float,
-) -> tuple[list[tuple[float, float]], list[float]]:
-    def build(items: list[tuple[float, float]], spacing: float) -> list[float]:
+) -> tuple[list[float], list[float], list[float]]:
+    if not radii:
+        return [], [], []
+
+    gap_base = 24.0 if len(radii) <= 8 else 13.0
+    scale = 1.0
+    result: tuple[list[float], list[float], list[float]] = ([], [], [])
+
+    for _ in range(80):
+        scaled_radii = [max(MIN_PLANET_RADIUS, radius * scale) for radius in radii]
+        scaled_extents = [max(0.0, extent * scale) for extent in extents]
+        gap = max(1.2, gap_base * scale)
         orbits: list[float] = []
-        for index, (radius, extent) in enumerate(items):
+        previous_reach = 0.0
+        for index, (radius, extent) in enumerate(zip(scaled_radii, scaled_extents)):
+            reach = radius + extent
+            floor = sun_radius + 14.0 + reach
             if index == 0:
-                orbits.append(inner_orbit + radius + extent)
+                orbit = floor
             else:
-                previous_radius, previous_extent = items[index - 1]
-                orbits.append(
-                    orbits[-1]
-                    + previous_radius
-                    + previous_extent
-                    + spacing
-                    + radius
-                    + extent
-                )
-        return orbits
-
-    if not pairs:
-        return [], []
-
-    orbits = build(pairs, gap)
-    for _ in range(60):
-        radius, extent = pairs[-1]
-        if orbits[-1] + radius + extent <= max_extent - 6.0:
+                orbit = max(floor, orbits[-1] + previous_reach + gap + reach)
+            orbits.append(orbit)
+            previous_reach = reach
+        result = (scaled_radii, scaled_extents, orbits)
+        outer = orbits[-1] + previous_reach
+        if outer <= max_extent:
             break
-        gap = max(4.0, gap * 0.9)
-        pairs = [(max(2.0, radius * 0.94), extent * 0.94) for radius, extent in pairs]
-        orbits = build(pairs, gap)
+        span = outer - (sun_radius + 14.0)
+        available = max_extent - (sun_radius + 14.0)
+        if span <= 0.0 or available <= 0.0:
+            break
+        scale *= max(0.03, (available / span) * 0.97)
 
-    radius, extent = pairs[-1]
-    if orbits[-1] + radius + extent > max_extent - 6.0:
-        span = orbits[-1] + radius + extent - inner_orbit
-        available = max_extent - 6.0 - inner_orbit
-        ratio = max(0.0, available / span) if span > 0 else 1.0
-        gap = gap * ratio
-        scaled: list[tuple[float, float]] = []
-        for planet_radius, moon_extent in pairs:
-            radius_scaled = planet_radius * ratio
-            extent_scaled = moon_extent * ratio
-            radius_final = max(MIN_PLANET_RADIUS, radius_scaled)
-            extent_final = max(0.0, radius_scaled + extent_scaled - radius_final)
-            scaled.append((radius_final, extent_final))
-        pairs = scaled
-        orbits = build(pairs, gap)
-
-    return pairs, orbits
+    return result
 
 
-def _label_rect(label: Label) -> tuple[float, float, float, float]:
-    text_width = 6.2 * len(label.text) + 4.0
-    if label.anchor == "start":
-        return (label.x, label.y - 12.0, label.x + text_width, label.y + 3.0)
-    return (label.x - text_width, label.y - 12.0, label.x, label.y + 3.0)
-
-
-def _overlaps(first, second, padding: float = 2.0) -> bool:
+def _boxes_overlap(
+    first: tuple[float, float, float, float],
+    second: tuple[float, float, float, float],
+    padding: float = 0.0,
+) -> bool:
     return not (
         first[2] + padding <= second[0]
         or second[2] + padding <= first[0]
@@ -239,62 +258,13 @@ def _overlaps(first, second, padding: float = 2.0) -> bool:
     )
 
 
-def _label_candidates(
-    x: float, y: float, direction_x: float, direction_y: float
-):
-    yield x, y
-    for step in range(1, 7):
-        yield x + direction_x * 7.0 * step, y + direction_y * 7.0 * step
-    for radius in (14.0, 26.0, 38.0):
-        for delta_x, delta_y in (
-            (-1, -1),
-            (1, -1),
-            (-1, 1),
-            (1, 1),
-            (0, -1),
-            (0, 1),
-            (-1, 0),
-            (1, 0),
-        ):
-            yield x + delta_x * radius, y + delta_y * radius * 0.7
-
-
-def _resolve_labels(
-    labels: list[Label],
-    directions: list[tuple[float, float]],
-    obstacles: list[tuple[float, float, float, float]],
-    hard_zones: list[tuple[float, float, float, float]],
-    width: int,
-    height: int,
-) -> list[Label]:
-    resolved = list(labels)
-    placed = list(obstacles)
-    order = sorted(
-        (index for index, label in enumerate(resolved) if label.text),
-        key=lambda index: (resolved[index].y, resolved[index].x),
-    )
-
-    for index in order:
-        label = resolved[index]
-        direction_x, direction_y = directions[index]
-        chosen: Label | None = None
-        for x, y in _label_candidates(label.x, label.y, direction_x, direction_y):
-            x = _clamp(x, 8.0, width - 8.0)
-            y = _clamp(y, 20.0, height - 10.0)
-            candidate = Label(text=label.text, x=x, y=y, anchor=label.anchor)
-            box = _label_rect(candidate)
-            if any(_overlaps(box, zone, 0.0) for zone in hard_zones):
-                continue
-            if any(_overlaps(box, other) for other in placed):
-                continue
-            chosen = candidate
-            placed.append(box)
-            break
-        resolved[index] = chosen or Label(
-            text="", x=label.x, y=label.y, anchor=label.anchor
-        )
-
-    return resolved
+def _box_distance(
+    first: tuple[float, float, float, float],
+    second: tuple[float, float, float, float],
+) -> float:
+    dx = max(first[0] - second[2], second[0] - first[2], 0.0)
+    dy = max(first[1] - second[3], second[1] - first[3], 0.0)
+    return math.hypot(dx, dy)
 
 
 def _build_moons(
@@ -302,6 +272,7 @@ def _build_moons(
     language: str,
     planet_radius: float,
     moon_extent: float,
+    planet_color: str,
 ) -> tuple[Moon, ...]:
     group = [repo for repo in repositories if repo.primary_language == language]
     if not group:
@@ -309,97 +280,131 @@ def _build_moons(
     group.sort(key=lambda repo: (-repo.stargazers_count, repo.name.lower()))
 
     rings = math.ceil(len(group) / MOONS_PER_RING)
-    nominal = 6.0 + 4.5 * (rings - 1) + 2.4
-    scale = (moon_extent / nominal) if nominal > 0 else 1.0
-    if scale <= 0.0:
-        scale = 0.15
-    base = _jitter(language) * 360.0
-    dot = _clamp(planet_radius * 0.16, 1.0, 2.4)
-
+    nominal = _moon_extent(len(group)) or 1.0
+    scale = (moon_extent / nominal) if nominal > 0 else 0.0
+    scale = max(0.03, scale)
+    base = _jitter(f"moon-base:{language}") * 360.0
     moons: list[Moon] = []
+
     for index, repo in enumerate(group):
         ring = index // MOONS_PER_RING
         slot = index % MOONS_PER_RING
         ring_count = min(MOONS_PER_RING, len(group) - ring * MOONS_PER_RING)
-        orbit = planet_radius + (6.0 + 4.5 * ring) * scale
+        orbit = planet_radius + (24.0 + 12.0 * ring) * scale
         angle = (
-            base + slot * (360.0 / ring_count) + ring * 13.0
+            base
+            + slot * (360.0 / ring_count)
+            + ring * 17.0
+            + _jitter(f"moon-angle:{repo.full_name}") * 9.0
         ) % 360.0
+        direction = 1 if (index + ring) % 2 == 0 else -1
+        # One angular velocity per planet keeps its moons evenly spaced forever,
+        # so staggered phases never collapse into a cluster.
+        period = round(16.0 + _jitter(f"moon-period:{language}") * 6.0, 2)
+        begin = -round(_jitter(f"moon-begin:{repo.full_name}") * period, 2)
+        radians = math.radians(angle)
+        static_x = math.cos(radians) * orbit
+        static_y = math.sin(radians) * orbit
+        star_weight = math.log1p(max(0, repo.stargazers_count))
+        moon_radius = max(0.35, (1.75 + 0.32 * star_weight) * scale)
+        label_text = repo.name
+        label_radius = max(orbit + 26.0, 5.4 * len(label_text) / 2.0 + 14.0)
         url = repo.html_url or f"https://github.com/{repo.full_name}"
         moons.append(
             Moon(
                 name=repo.name,
-                repo=repo.name,
+                repo=repo.full_name,
                 url=url,
                 stars=repo.stargazers_count,
-                radius=dot,
-                orbit=orbit,
-                angle=angle,
+                radius=round(moon_radius, 2),
+                orbit=round(orbit, 2),
+                start_angle=round(angle, 2),
+                static_x=round(static_x, 2),
+                static_y=round(static_y, 2),
+                path=_circle_motion_path(orbit, angle, direction),
+                period=period,
+                begin=begin,
+                direction=direction,
+                color=mix(planet_color, "#ffffff", 0.48),
+                label=label_text,
+                label_radius=round(label_radius, 2),
             )
         )
     return tuple(moons)
 
 
-def _plan_index(
-    repositories: list[Repository], languages: list[Language], width: int
-) -> tuple[list[tuple[str, str, int]], int, int] | None:
-    if not repositories:
-        return None
-    order = {language.name: index for index, language in enumerate(languages)}
-    entries: list[tuple[str, str, int]] = []
-    for language in languages:
-        group = [repo for repo in repositories if repo.primary_language == language.name]
-        group.sort(key=lambda repo: (-repo.stargazers_count, repo.name.lower()))
-        for repo in group:
-            url = repo.html_url or f"https://github.com/{repo.full_name}"
-            entries.append((repo.name, url, order[language.name]))
-
-    count = len(entries)
-    columns = min(6, count) if count <= 24 else min(8, math.ceil(count / 8))
-    rows = math.ceil(count / columns)
-    while rows > 12 and columns < 12:
-        columns += 1
-        rows = math.ceil(count / columns)
-    return entries, columns, rows
-
-
-def _index_height(plan: tuple[list[tuple[str, str, int]], int, int] | None) -> float:
-    if plan is None:
-        return 0.0
-    _, _, rows = plan
-    return 16.0 + rows * 13.0 + 12.0
-
-
-def _build_index(
-    plan: tuple[list[tuple[str, str, int]], int, int] | None,
+def _build_comets(
+    commits: list[Commit],
     width: int,
     height: int,
-) -> RepoIndex | None:
-    if plan is None:
-        return None
-    entries, columns, rows = plan
-    column_width = (width - 72.0) / columns
-    limit = max(6, int((column_width - 18.0) / 5.3))
-    top = height - _index_height(plan) - 12.0
-    return RepoIndex(
-        entries=tuple(
-            IndexEntry(
-                name=name,
-                display=_truncate(name, limit),
-                url=url,
-                color_index=color_index,
-            )
-            for name, url, color_index in entries
-        ),
-        columns=columns,
-        rows=rows,
-        row_height=13.0,
-        font_size=9.5,
-        top=top,
-        left=32.0,
-        column_width=column_width,
-        header=f"REPOSITORIES · {len(entries)}",
+    limit: int,
+    seed: int,
+) -> tuple[Comet, ...]:
+    """Map verified commits to white, diagonal comets on a shared cycle.
+
+    Every comet travels from the upper-left toward the lower-right. Their
+    active windows are spaced on one repeating cycle so that at most two
+    comets are ever visible at the same instant, including the loop boundary.
+    """
+
+    unique: dict[tuple[str, str], Commit] = {}
+    for commit in commits:
+        if commit.sha:
+            unique.setdefault(commit.identity, commit)
+
+    ordered = sorted(
+        unique.values(),
+        key=lambda commit: (commit.committed_at or "", commit.repo.lower(), commit.sha),
+        reverse=True,
     )
+    selected = ordered[: max(0, min(8, int(limit)))]
+    count = len(selected)
+    if count == 0:
+        return ()
+
+    cycle = max(COMET_MIN_CYCLE, count * COMET_SLOT + COMET_FLIGHT)
+    comets: list[Comet] = []
+    for index, commit in enumerate(selected):
+        rng = random.Random(_seed_for(f"comet:{seed}:{commit.repo}:{commit.sha}"))
+        start_x = rng.uniform(-0.18, 0.32) * width
+        start_y = rng.uniform(-0.16, 0.05) * height
+        end_x = width + rng.uniform(70.0, 210.0)
+        end_y = height + rng.uniform(40.0, 130.0)
+        end_x = max(end_x, start_x + 0.60 * width)
+        end_y = max(end_y, start_y + 0.60 * height)
+        # Static/preview frames park comets in clear corners instead of on top
+        # of the orbital system. Animation always uses the diagonal trajectory.
+        static_slots = (
+            (0.10, 0.16),
+            (0.64, 0.82),
+            (0.80, 0.12),
+            (0.16, 0.78),
+            (0.30, 0.86),
+            (0.86, 0.30),
+        )
+        slot_x, slot_y = static_slots[index % len(static_slots)]
+        static_x = slot_x * width
+        static_y = slot_y * height
+        comets.append(
+            Comet(
+                repo=commit.repo,
+                repo_name=commit.repo_name,
+                sha=commit.sha,
+                commit_url=commit.url
+                or f"https://github.com/{commit.repo}/commit/{commit.sha}",
+                label=commit.repo_name,
+                start_x=round(start_x, 2),
+                start_y=round(start_y, 2),
+                end_x=round(end_x, 2),
+                end_y=round(end_y, 2),
+                cycle=round(cycle, 2),
+                window_start=round(index * COMET_SLOT, 2),
+                flight=COMET_FLIGHT,
+                static_x=round(static_x, 2),
+                static_y=round(static_y, 2),
+            )
+        )
+    return tuple(comets)
 
 
 def _build_stars(width: int, height: int, density: str, seed: int) -> tuple[Star, ...]:
@@ -408,49 +413,15 @@ def _build_stars(width: int, height: int, density: str, seed: int) -> tuple[Star
     if base > 0:
         count = max(1, round(base * (width * height) / (DEFAULT_WIDTH * DEFAULT_HEIGHT)))
     rng = random.Random(seed)
-    stars = [
+    return tuple(
         Star(
             x=round(rng.uniform(0, width), 2),
             y=round(rng.uniform(0, height), 2),
-            radius=round(rng.uniform(0.4, 1.4), 2),
-            opacity=round(rng.uniform(0.25, 0.9), 2),
-            twinkle_delay=round(rng.uniform(0, 4), 2),
+            radius=round(rng.uniform(0.28, 1.05), 2),
+            opacity=round(rng.uniform(0.14, 0.72), 2),
         )
         for _ in range(count)
-    ]
-    return tuple(stars)
-
-
-def _build_comets(width: int, height: int, count: int, seed: int) -> tuple[Comet, ...]:
-    total = max(0, min(3, int(count)))
-    comets: list[Comet] = []
-    for index in range(total):
-        rng = random.Random(seed + index)
-        x0 = rng.uniform(0.05 * width, 0.42 * width)
-        y0 = rng.uniform(0.28 * height, 0.45 * height)
-        x1 = rng.uniform(0.55 * width, 0.92 * width)
-        y1 = rng.uniform(0.55 * height, 0.85 * height)
-        control_x = (x0 + x1) / 2 + rng.uniform(-0.12 * width, 0.12 * width)
-        control_y = (y0 + y1) / 2 + rng.uniform(-0.10 * height, 0.10 * height)
-        path = (
-            f"M 0 0 Q {_num(control_x - x0)} {_num(control_y - y0)} "
-            f"{_num(x1 - x0)} {_num(y1 - y0)}"
-        )
-        heading = math.atan2(y1 - y0, x1 - x0)
-        comets.append(
-            Comet(
-                path=path,
-                duration=round(rng.uniform(6, 12), 2),
-                begin=-float(index * 3),
-                origin_x=round(x0, 2),
-                origin_y=round(y0, 2),
-                static_x=round(0.25 * x0 + 0.5 * control_x + 0.25 * x1, 2),
-                static_y=round(0.25 * y0 + 0.5 * control_y + 0.25 * y1, 2),
-                streak_x=round(-math.cos(heading) * 22.0, 2),
-                streak_y=round(-math.sin(heading) * 22.0, 2),
-            )
-        )
-    return tuple(comets)
+    )
 
 
 def build_layout(
@@ -458,10 +429,12 @@ def build_layout(
     repositories: list[Repository],
     languages: list[Language],
     *,
+    commits: list[Commit] | tuple[Commit, ...] = (),
+    avatar_uri: str = "",
     width: int = DEFAULT_WIDTH,
     height: int = DEFAULT_HEIGHT,
     star_density: str = "normal",
-    comet_count: int = 0,
+    comet_limit: int = DEFAULT_COMET_LIMIT,
 ) -> SolarSystemLayout:
     width = max(320, int(width))
     height = max(240, int(height))
@@ -477,128 +450,169 @@ def build_layout(
 
     classified = {language.name for language in languages}
     shown = [repo for repo in repositories if repo.primary_language in classified]
-
     counts: dict[str, int] = {}
     for repo in shown:
         language = repo.primary_language
         if language is not None:
             counts[language] = counts.get(language, 0) + 1
 
-    index_plan = _plan_index(shown, languages, width)
-    index_height = _index_height(index_plan)
-    top_reserved = 96.0
-    bottom_reserved = index_height + 24.0 if index_plan is not None else 54.0
-    available_height = max(120.0, height - top_reserved - bottom_reserved)
+    sun_radius = _clamp(min(width, height) * 0.06, 30.0, 46.0)
     cx = width / 2.0
-    cy = top_reserved + available_height / 2.0
-    max_extent = max(60.0, min((width - 160.0) / 2.0, available_height / 2.0))
-    aspect = min(1.75, max(1.0, (width - 160.0) / (2.0 * max_extent)))
-    sun_radius = max(22.0, min(width, height) * 0.05)
-    inner_orbit = sun_radius + 46.0
+    cy = height / 2.0
+    horizontal_margin = 66.0
+    vertical_margin = 34.0
+    label_reserve = 58.0
+    available_rx = width / 2.0 - horizontal_margin - MAX_PLANET_RADIUS
+    available_ry = height / 2.0 - vertical_margin - MAX_PLANET_RADIUS - label_reserve
+    aspect = _clamp(available_rx / max(1.0, available_ry), 1.0, ASPECT_CAP)
+    max_extent = max(60.0, min(available_rx / aspect, available_ry))
 
     total_bytes = sum(language.bytes for language in languages) or 1
     max_bytes = max((language.bytes for language in languages), default=1)
+    base_radii = [_planet_radius(language.bytes, max_bytes) for language in languages]
+    base_extents = [_moon_extent(counts.get(language.name, 0)) for language in languages]
+    radii, extents, orbits = _fit_orbits(base_radii, base_extents, sun_radius, max_extent)
 
-    radii = [_planet_radius(language.bytes, max_bytes) for language in languages]
-    extents = [_moon_extent(counts.get(language.name, 0)) for language in languages]
-    gap = 24.0 if len(languages) <= 8 else 16.0
-    pairs, orbits = _fit_orbits(
-        list(zip(radii, extents)), inner_orbit, max_extent, gap
-    )
+    palette = [
+        "#7dd3fc",
+        "#a78bfa",
+        "#f472b6",
+        "#34d399",
+        "#fbbf24",
+        "#fb7185",
+        "#60a5fa",
+        "#2dd4bf",
+        "#c084fc",
+        "#f59e0b",
+        "#38bdf8",
+        "#f87171",
+    ]
 
-    geometry: list[tuple[float, float, float, float, float, float]] = []
-    percents: list[tuple[float, str]] = []
-    labels: list[Label] = []
-    directions: list[tuple[float, float]] = []
-
+    phase = _jitter(f"phase:{user.login}:{len(languages)}") * 360.0
+    specs: list[dict] = []
     for index, language in enumerate(languages):
-        radius, extent = pairs[index]
+        radius = radii[index]
+        extent = extents[index]
         orbit = orbits[index]
-        angle = (index * GOLDEN_ANGLE + _jitter(language.name) * 360.0) % 360.0
+        fallback = palette[index % len(palette)]
+        color = language_color(language.name, fallback)
+        if len(languages) <= 8:
+            angle = (
+                phase
+                + index * (360.0 / max(1, len(languages)))
+                + (_jitter(f"planet:{language.name}") - 0.5) * 16.0
+            ) % 360.0
+        else:
+            angle = (
+                index * GOLDEN_ANGLE + _jitter(f"planet:{language.name}") * 360.0
+            ) % 360.0
+        direction = 1 if _jitter(f"direction:{language.name}") >= 0.5 else -1
+        rx = orbit * aspect
+        ry = orbit
         radians = math.radians(angle)
-        planet_x = cx + math.cos(radians) * orbit * aspect
-        planet_y = cy + math.sin(radians) * orbit
-        geometry.append((planet_x, planet_y, orbit, radius, extent, angle))
-        percent = 100.0 * language.bytes / total_bytes
-        percent_text = f"{percent:.0f}%" if percent >= 1.0 else "<1%"
-        percents.append((percent, percent_text))
-        offset = radius + max(14.0, extent + 12.0)
-        label_x = _clamp(planet_x + math.cos(radians) * offset, 8.0, width - 8.0)
-        label_y = _clamp(planet_y + math.sin(radians) * offset + 4.0, 20.0, height - 10.0)
-        anchor = "start" if label_x >= cx else "end"
-        if anchor == "start" and label_x > width - 140.0:
-            anchor = "end"
-        text = "" if index >= LABEL_BUDGET else f"{language.name} · {percent_text}"
-        labels.append(Label(text=text, x=label_x, y=label_y, anchor=anchor))
-        directions.append((math.cos(radians), math.sin(radians)))
-
-    header_zone = (0.0, 0.0, 680.0, 94.0)
-    legend_zone = (width - 268.0, 14.0, width - 8.0, 196.0)
-    hard_zones = [header_zone, legend_zone]
-    if index_plan is not None:
-        index_top = height - index_height - 12.0
-        hard_zones.append((0.0, index_top - 8.0, float(width), float(height)))
-
-    obstacles: list[tuple[float, float, float, float]] = list(hard_zones)
-    for x, y, _orbit, radius, extent, _angle in geometry:
-        reach = radius + extent
-        obstacles.append((x - reach, y - reach, x + reach, y + reach))
-
-    labels = _resolve_labels(labels, directions, obstacles, hard_zones, width, height)
-
-    planets: list[Planet] = []
-    for index, language in enumerate(languages):
-        x, y, orbit, radius, extent, angle = geometry[index]
-        percent, percent_text = percents[index]
+        static_x = cx + math.cos(radians) * rx
+        static_y = cy + math.sin(radians) * ry
+        period = round(
+            34.0
+            + (orbit / max(1.0, max_extent)) * 32.0
+            + _jitter(f"period:{language.name}") * 9.0,
+            2,
+        )
+        begin = -round(_jitter(f"begin:{language.name}") * period, 2)
+        label = language.name
         url = (
             f"https://github.com/{user.login}"
             f"?tab=repositories&language={quote(language.name.lower())}"
         )
+        specs.append(
+            {
+                "index": index,
+                "language": language,
+                "radius": radius,
+                "extent": extent,
+                "orbit": orbit,
+                "color": color,
+                "angle": angle,
+                "direction": direction,
+                "rx": rx,
+                "ry": ry,
+                "static_x": static_x,
+                "static_y": static_y,
+                "period": period,
+                "begin": begin,
+                "label": label,
+                "url": url,
+            }
+        )
+
+    planets: list[Planet] = []
+    for spec in specs:
+        moons = _build_moons(
+            shown,
+            spec["language"].name,
+            spec["radius"],
+            spec["extent"],
+            spec["color"],
+        )
+        moon_reach = max((moon.label_radius for moon in moons), default=0.0)
+        label_radius = max(spec["radius"] + 30.0, moon_reach + 16.0)
         planets.append(
             Planet(
-                language=language.name,
-                url=url,
-                x=x,
-                y=y,
-                radius=radius,
-                reach=radius + extent,
-                orbit=orbit,
-                angle=angle,
-                label=labels[index],
-                repo_count=language.repo_count,
-                bytes=language.bytes,
-                percent=percent,
-                percent_text=percent_text,
-                moons=_build_moons(shown, language.name, radius, extent),
+                language=spec["language"].name,
+                url=spec["url"],
+                radius=round(spec["radius"], 2),
+                orbit=round(spec["orbit"], 2),
+                start_angle=round(spec["angle"], 2),
+                static_x=round(spec["static_x"], 2),
+                static_y=round(spec["static_y"], 2),
+                path=_ellipse_motion_path(
+                    spec["rx"],
+                    spec["ry"],
+                    spec["static_x"],
+                    spec["static_y"],
+                    cx,
+                    cy,
+                    spec["direction"],
+                ),
+                period=spec["period"],
+                begin=spec["begin"],
+                direction=spec["direction"],
+                color=spec["color"],
+                label=spec["label"],
+                label_radius=round(label_radius, 2),
+                repo_count=spec["language"].repo_count,
+                bytes=spec["language"].bytes,
+                moons=moons,
             )
         )
 
     seed = _seed(width, height, user.login)
-    unclassified = len(repositories) - len(shown)
-    meta = f"{len(repositories)} repositories · {len(languages)} languages"
-    if unclassified:
-        meta += f" · {unclassified} unclassified"
+    description = (
+        f"An animated orbit of {len(repositories)} public repositories across "
+        f"{len(languages)} programming languages."
+    )
 
     return SolarSystemLayout(
         width=width,
         height=height,
         cx=cx,
         cy=cy,
-        sun_radius=sun_radius,
-        max_extent=max_extent,
-        aspect=aspect,
+        sun_radius=round(sun_radius, 2),
+        max_extent=round(max_extent, 2),
+        aspect=round(aspect, 3),
         user=user,
         repos_count=len(repositories),
         languages_total=len(languages),
         planets=tuple(planets),
         stars=_build_stars(width, height, star_density, seed),
-        comets=_build_comets(width, height, comet_count, seed),
-        repo_index=_build_index(index_plan, width, height),
-        title=_truncate(f"{user.name or user.login} · GitHub Solar System", 52),
-        subtitle=_truncate(
-            user.bio
-            or "Open-source repositories mapped to the languages that power them.",
-            86,
+        comets=_build_comets(
+            list(commits),
+            width,
+            height,
+            int(comet_limit),
+            seed,
         ),
-        meta=meta,
+        avatar_uri=str(avatar_uri or ""),
+        title=f"Solar system for @{user.login}",
+        description=description,
     )
