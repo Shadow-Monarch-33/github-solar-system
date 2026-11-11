@@ -1,0 +1,117 @@
+{
+  "user": {
+    "login": "Shadow-Monarch-33",
+    "id": 293586478,
+    "avatar_url": "https://avatars.githubusercontent.com/u/293586478?v=4",
+    "html_url": "https://github.com/Shadow-Monarch-33",
+    "name": "Shadow Monarch",
+    "bio": "\"The real risk is not taking any risk\"",
+    "public_repos": 7,
+    "followers": 2,
+    "following": 3
+  },
+  "repos": [
+    {
+      "name": "PlateCost",
+      "full_name": "Shadow-Monarch-33/PlateCost",
+      "html_url": "https://github.com/Shadow-Monarch-33/PlateCost",
+      "description": "Cost-aware recipe planning",
+      "language": "TypeScript",
+      "language_bytes": {
+        "TypeScript": 277002,
+        "JavaScript": 31865,
+        "PLpgSQL": 19832,
+        "CSS": 2413
+      },
+      "stargazers_count": 0,
+      "size": 287,
+      "default_branch": "main",
+      "pushed_at": "2026-10-18T20:14:11Z"
+    },
+    {
+      "name": "Shadow-Monarch-33",
+      "full_name": "Shadow-Monarch-33/Shadow-Monarch-33",
+      "html_url": "https://github.com/Shadow-Monarch-33/Shadow-Monarch-33",
+      "description": "Profile repository",
+      "language": null,
+      "language_bytes": {},
+      "stargazers_count": 0,
+      "size": 2181
+    },
+    {
+      "name": "Casefile-042",
+      "full_name": "Shadow-Monarch-33/Casefile-042",
+      "html_url": "https://github.com/Shadow-Monarch-33/Casefile-042",
+      "description": "A small case file reader",
+      "language": "Python",
+      "language_bytes": {
+        "Python": 229560
+      },
+      "stargazers_count": 0,
+      "size": 2015
+    },
+    {
+      "name": "Slack-Bot",
+      "full_name": "Shadow-Monarch-33/Slack-Bot",
+      "html_url": "https://github.com/Shadow-Monarch-33/Slack-Bot",
+      "description": "Slack automation",
+      "language": "Ruby",
+      "language_bytes": {
+        "Ruby": 8512
+      },
+      "stargazers_count": 0,
+      "size": 9
+    },
+    {
+      "name": "Eclipse-Theme",
+      "full_name": "Shadow-Monarch-33/Eclipse-Theme",
+      "html_url": "https://github.com/Shadow-Monarch-33/Eclipse-Theme",
+      "description": "Eclipse inspired theme",
+      "language": null,
+      "language_bytes": {},
+      "stargazers_count": 4,
+      "size": 15134
+    },
+    {
+      "name": "Axiom-Generative-LLM-Client",
+      "full_name": "Shadow-Monarch-33/Axiom-Generative-LLM-Client",
+      "html_url": "https://github.com/Shadow-Monarch-33/Axiom-Generative-LLM-Client",
+      "description": "Generative LLM client",
+      "language": "Python",
+      "language_bytes": {
+        "Python": 27744
+      },
+      "stargazers_count": 0,
+      "size": 12
+    },
+    {
+      "name": "Web-Scraper",
+      "full_name": "Shadow-Monarch-33/Web-Scraper",
+      "html_url": "https://github.com/Shadow-Monarch-33/Web-Scraper",
+      "description": "A small scraper",
+      "language": "Python",
+      "language_bytes": {
+        "Python": 1739
+      },
+      "stargazers_count": 0,
+      "size": 2
+    }
+  ],
+  "events": [
+    {
+      "type": "PushEvent",
+      "repo": {"name": "Shadow-Monarch-33/Casefile-042"},
+      "created_at": "2026-11-09T18:22:00Z"
+    },
+    {
+      "type": "PushEvent",
+      "repo": {"name": "Shadow-Monarch-33/PlateCost"},
+      "created_at": "2026-11-08T14:05:00Z"
+    },
+    {
+      "type": "PushEvent",
+      "repo": {"name": "Shadow-Monarch-33/Casefile-042"},
+      "created_at": "2026-11-07T09:41:00Z"
+    }
+  ]
+}

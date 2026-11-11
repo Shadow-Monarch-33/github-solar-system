@@ -1,0 +1,63 @@
+name: Update solar system
+
+on:
+  schedule:
+    - cron: "17 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: solar-system
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Generate SVG
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python generate.py --username Shadow-Monarch-33 --output output/solar-system.svg
+
+      - name: Validate SVG
+        run: |
+          python - <<'PY'
+          import pathlib
+          import xml.etree.ElementTree as ElementTree
+
+          svg = pathlib.Path("output/solar-system.svg").read_text(encoding="utf-8")
+          ElementTree.fromstring(svg)
+          lowered = svg.lower()
+          for forbidden in ("<script", "<image", "<foreignobject", "@import"):
+              assert forbidden not in lowered, forbidden
+          assert "url(http" not in lowered
+          assert "ghp_" not in svg and "github_pat_" not in svg
+          print("SVG is valid XML with no scripts, external assets or tokens")
+          PY
+
+      - name: Commit and push when changed
+        run: |
+          if [ -z "$(git status --porcelain output/solar-system.svg)" ]; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add output/solar-system.svg
+          git commit -m "chore: update solar system [skip ci]"
+          git push
