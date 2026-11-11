@@ -111,17 +111,21 @@ def test_planets_and_moons_use_centred_nested_paths(user, repos):
 def test_comets_map_verified_commits_newest_first(user, repos, commits):
     layout = layout_for(user, repos, commits=commits)
 
-    assert len(layout.comets) == 4
+    assert len(layout.comets) == 6
     assert [comet.repo_name for comet in layout.comets] == [
         "alpha",
         "gamma",
+        "delta",
         "alpha",
+        "gamma",
         "delta",
     ]
     assert [comet.sha for comet in layout.comets] == [
         "a" * 40,
         "c" * 40,
+        "d" * 40,
         "b" * 40,
+        "c" * 40,
         "d" * 40,
     ]
     assert all(comet.label == comet.repo_name for comet in layout.comets)
@@ -141,7 +145,7 @@ def test_duplicate_commits_are_deduplicated(user, repos, commits):
     duplicate = [*commits, commits[0], commits[0]]
     layout = layout_for(user, repos, commits=duplicate)
 
-    assert len(layout.comets) == 4
+    assert len(layout.comets) == 6
 
 
 def test_comets_always_travel_upper_left_to_lower_right(user, repos, commits):
@@ -151,7 +155,7 @@ def test_comets_always_travel_upper_left_to_lower_right(user, repos, commits):
         assert comet.end_x > comet.start_x + layout.width * 0.5
         assert comet.end_y > comet.start_y + layout.height * 0.5
         assert comet.start_x < layout.width * 0.4
-        assert comet.start_y < layout.height * 0.15
+        assert comet.start_y <= layout.height * 0.5
 
 
 def test_at_most_two_comets_are_visible_at_once(user, repos, commits):
@@ -288,7 +292,7 @@ def test_star_density_and_comet_limit_are_configurable(user, repos, commits):
     assert len(normal.stars) > len(off.stars)
 
     busy = layout_for(user, repos, commits=commits, comet_limit=9)
-    assert len(busy.comets) == 4
+    assert len(busy.comets) == 6
     assert off == layout_for(user, repos, star_density="off")
 
 

@@ -24,10 +24,10 @@ MOONS_PER_RING = 12
 MIN_PLANET_RADIUS = 0.5
 MAX_PLANET_RADIUS = 34.0
 DEFAULT_COMET_LIMIT = 6
-ASPECT_CAP = 1.55
-COMET_FLIGHT = 8.0
-COMET_SLOT = 5.5
-COMET_MIN_CYCLE = 26.0
+ASPECT_CAP = 2.15
+COMET_FLIGHT = 7.5
+COMET_SLOT = 3.85
+COMET_MIN_CYCLE = 7.7
 
 
 @dataclass(frozen=True)
@@ -161,7 +161,7 @@ def _moon_extent(moon_count: int) -> float:
     if moon_count <= 0:
         return 0.0
     rings = math.ceil(moon_count / MOONS_PER_RING)
-    return 30.0 + 12.0 * (rings - 1) + 4.0
+    return 10.0 + 7.0 * (rings - 1) + 3.0
 
 
 def _ellipse_motion_path(
@@ -213,14 +213,26 @@ def _fit_orbits(
     if not radii:
         return [], [], []
 
-    gap_base = 24.0 if len(radii) <= 8 else 13.0
+    count = len(radii)
+    if count <= 5:
+        gap_base = 28.0
+    elif count <= 10:
+        gap_base = 18.0
+    elif count <= 20:
+        gap_base = 11.0
+    else:
+        gap_base = max(2.5, 140.0 / count)
+
     scale = 1.0
     result: tuple[list[float], list[float], list[float]] = ([], [], [])
 
     for _ in range(80):
         scaled_radii = [max(MIN_PLANET_RADIUS, radius * scale) for radius in radii]
-        scaled_extents = [max(0.0, extent * scale) for extent in extents]
-        gap = max(1.2, gap_base * scale)
+        scaled_extents = [
+            (max(0.0, extent * scale) + (0.35 if extent > 0 else 0.0))
+            for extent in extents
+        ]
+        gap = max(0.8, gap_base * scale)
         orbits: list[float] = []
         previous_reach = 0.0
         for index, (radius, extent) in enumerate(zip(scaled_radii, scaled_extents)):
@@ -290,7 +302,7 @@ def _build_moons(
         ring = index // MOONS_PER_RING
         slot = index % MOONS_PER_RING
         ring_count = min(MOONS_PER_RING, len(group) - ring * MOONS_PER_RING)
-        orbit = planet_radius + (24.0 + 12.0 * ring) * scale
+        orbit = planet_radius + (10.0 + 7.0 * ring) * scale
         angle = (
             base
             + slot * (360.0 / ring_count)
@@ -306,9 +318,9 @@ def _build_moons(
         static_x = math.cos(radians) * orbit
         static_y = math.sin(radians) * orbit
         star_weight = math.log1p(max(0, repo.stargazers_count))
-        moon_radius = max(0.35, (1.75 + 0.32 * star_weight) * scale)
+        moon_radius = max(0.35, (1.6 + 0.28 * star_weight) * scale)
         label_text = repo.name
-        label_radius = max(orbit + 26.0, 5.4 * len(label_text) / 2.0 + 14.0)
+        label_radius = orbit
         url = repo.html_url or f"https://github.com/{repo.full_name}"
         moons.append(
             Moon(
@@ -325,12 +337,80 @@ def _build_moons(
                 period=period,
                 begin=begin,
                 direction=direction,
-                color=mix(planet_color, "#ffffff", 0.48),
+                color=mix(planet_color, "#ffffff", 0.65),
                 label=label_text,
                 label_radius=round(label_radius, 2),
             )
         )
     return tuple(moons)
+
+
+def _select_round_robin_commits(
+    commits: list[Commit],
+    limit: int,
+) -> list[Commit]:
+    """Select verified commits in strict round-robin repository order.
+
+    Prioritizes unique repositories. Every eligible repository appears
+    once before any repository repeats. Consecutive comets from the same
+    repository are never produced when at least two eligible repositories exist,
+    including across the animation loop boundary. Multiple commits from a single
+    repository are distributed across separate rotation cycles.
+    """
+    if limit <= 0:
+        return []
+
+    unique: dict[tuple[str, str], Commit] = {}
+    for commit in commits:
+        if commit.sha and commit.repo:
+            unique.setdefault(commit.identity, commit)
+
+    if not unique:
+        return []
+
+    repo_commits: dict[str, list[Commit]] = {}
+    for commit in unique.values():
+        repo_commits.setdefault(commit.repo, []).append(commit)
+
+    for clist in repo_commits.values():
+        clist.sort(
+            key=lambda c: (c.committed_at or "", c.sha),
+            reverse=True,
+        )
+
+    # Order repositories deterministically by newest commit timestamp, tie-breaking by name
+    ordered_repos = sorted(
+        repo_commits.keys(),
+        key=lambda r: (repo_commits[r][0].committed_at or "", r.lower()),
+        reverse=True,
+    )
+
+    k = len(ordered_repos)
+    max_limit = min(8, int(limit))
+
+    # Single repository case: repeating is allowed
+    if k == 1:
+        clist = repo_commits[ordered_repos[0]]
+        count = min(max_limit, len(clist))
+        return [clist[i] for i in range(count)]
+
+    # Multiple repositories:
+    # If limit is smaller than k, take the top `limit` repositories for 1 round
+    if max_limit < k:
+        participating = ordered_repos[:max_limit]
+        return [repo_commits[r][0] for r in participating]
+
+    # Full round-robin cycles across all k repositories so no repository
+    # repeats until all have appeared, and round-robin order is maintained
+    # across the animation loop boundary without consecutive duplicates.
+    rounds = max(1, max_limit // k)
+    selected: list[Commit] = []
+    for round_idx in range(rounds):
+        for r in ordered_repos:
+            clist = repo_commits[r]
+            selected.append(clist[round_idx % len(clist)])
+
+    return selected
 
 
 def _build_comets(
@@ -346,41 +426,34 @@ def _build_comets(
     active windows are spaced on one repeating cycle so that at most two
     comets are ever visible at the same instant, including the loop boundary.
     """
-
-    unique: dict[tuple[str, str], Commit] = {}
-    for commit in commits:
-        if commit.sha:
-            unique.setdefault(commit.identity, commit)
-
-    ordered = sorted(
-        unique.values(),
-        key=lambda commit: (commit.committed_at or "", commit.repo.lower(), commit.sha),
-        reverse=True,
-    )
-    selected = ordered[: max(0, min(8, int(limit)))]
+    selected = _select_round_robin_commits(commits, limit)
     count = len(selected)
     if count == 0:
         return ()
 
-    cycle = max(COMET_MIN_CYCLE, count * COMET_SLOT + COMET_FLIGHT)
+    cycle = round(max(COMET_MIN_CYCLE, (count + 1) * COMET_SLOT), 2)
     comets: list[Comet] = []
     for index, commit in enumerate(selected):
         rng = random.Random(_seed_for(f"comet:{seed}:{commit.repo}:{commit.sha}"))
-        start_x = rng.uniform(-0.18, 0.32) * width
-        start_y = rng.uniform(-0.16, 0.05) * height
-        end_x = width + rng.uniform(70.0, 210.0)
-        end_y = height + rng.uniform(40.0, 130.0)
+        # Spawn from the left boundary, shallow downward angle (16° to 24° below horizontal)
+        angle_deg = rng.uniform(16.0, 24.0)
+        angle_rad = math.radians(angle_deg)
+        start_x = rng.uniform(-200.0, -160.0)
+        start_y = rng.uniform(20.0, height * 0.38)
+        end_x = width + rng.uniform(60.0, 160.0)
+        dx = end_x - start_x
+        dy = dx * math.tan(angle_rad)
+        end_y = start_y + dy
         end_x = max(end_x, start_x + 0.60 * width)
-        end_y = max(end_y, start_y + 0.60 * height)
         # Static/preview frames park comets in clear corners instead of on top
         # of the orbital system. Animation always uses the diagonal trajectory.
         static_slots = (
-            (0.10, 0.16),
-            (0.64, 0.82),
-            (0.80, 0.12),
-            (0.16, 0.78),
-            (0.30, 0.86),
-            (0.86, 0.30),
+            (0.82, 0.16),
+            (0.18, 0.82),
+            (0.84, 0.78),
+            (0.16, 0.22),
+            (0.75, 0.25),
+            (0.25, 0.75),
         )
         slot_x, slot_y = static_slots[index % len(static_slots)]
         static_x = slot_x * width
@@ -459,9 +532,9 @@ def build_layout(
     sun_radius = _clamp(min(width, height) * 0.06, 30.0, 46.0)
     cx = width / 2.0
     cy = height / 2.0
-    horizontal_margin = 66.0
-    vertical_margin = 34.0
-    label_reserve = 58.0
+    horizontal_margin = 60.0
+    vertical_margin = 35.0
+    label_reserve = 32.0
     available_rx = width / 2.0 - horizontal_margin - MAX_PLANET_RADIUS
     available_ry = height / 2.0 - vertical_margin - MAX_PLANET_RADIUS - label_reserve
     aspect = _clamp(available_rx / max(1.0, available_ry), 1.0, ASPECT_CAP)
@@ -554,8 +627,8 @@ def build_layout(
             spec["extent"],
             spec["color"],
         )
-        moon_reach = max((moon.label_radius for moon in moons), default=0.0)
-        label_radius = max(spec["radius"] + 30.0, moon_reach + 16.0)
+        moon_reach = max((moon.orbit + moon.radius for moon in moons), default=0.0)
+        label_radius = spec["radius"] + 14.0
         planets.append(
             Planet(
                 language=spec["language"].name,

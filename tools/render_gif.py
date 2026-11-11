@@ -54,6 +54,20 @@ def svg_size(path: Path) -> tuple[int, int]:
     return max(1, width), max(1, height)
 
 
+def svg_cycle_duration(path: Path) -> float:
+    try:
+        root = ElementTree.parse(path).getroot()
+        for node in root.iter():
+            if node.tag.endswith("animateTransform") and "dur" in node.attrib:
+                val = node.attrib["dur"].rstrip("s")
+                dur = float(val)
+                if dur > 0:
+                    return dur
+    except Exception:
+        pass
+    return 8.0
+
+
 def render_frames(
     chrome: str,
     svg: Path,
@@ -130,8 +144,8 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Render an animated GIF fallback from the solar-system SVG.")
     parser.add_argument("--svg", required=True)
     parser.add_argument("--output", required=True)
-    parser.add_argument("--duration", type=float, default=8.0)
-    parser.add_argument("--fps", type=int, default=8)
+    parser.add_argument("--duration", type=float, default=None)
+    parser.add_argument("--fps", type=int, default=6)
     parser.add_argument("--chrome", default=None)
     parser.add_argument("--keep-frames", action="store_true")
     args = parser.parse_args(argv)
@@ -144,6 +158,7 @@ def main(argv: list[str] | None = None) -> int:
     chrome = find_chrome(args.chrome)
     ffmpeg = find_ffmpeg()
     width, height = svg_size(svg)
+    duration = args.duration if args.duration is not None else svg_cycle_duration(svg)
 
     directory = Path(tempfile.mkdtemp(prefix="solar-gif-"))
     try:
@@ -151,12 +166,12 @@ def main(argv: list[str] | None = None) -> int:
             chrome,
             svg,
             directory,
-            duration=args.duration,
+            duration=duration,
             fps=args.fps,
             width=width,
             height=height,
         )
-        encode_gif(ffmpeg, directory, frames, output, args.duration, args.fps)
+        encode_gif(ffmpeg, directory, frames, output, duration, args.fps)
         print(f"Wrote {output} ({len(frames)} frames)")
     finally:
         if not args.keep_frames:

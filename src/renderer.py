@@ -16,9 +16,11 @@ from xml.sax.saxutils import escape
 
 from .colors import mix, shade
 from .layout import Comet, Moon, Planet, SolarSystemLayout
+from .logos import get_planet_logo
 from .styles import DEFAULT_THEME, get_theme
 
 FONT_STACK = "'Avenir Next', 'Segoe UI', Ubuntu, 'Helvetica Neue', Arial, sans-serif"
+MONO_FONT = "'SF Mono', Monaco, 'Fira Code', 'Roboto Mono', 'Cascadia Code', Menlo, Consolas, monospace"
 BACKGROUND = "#000000"
 
 
@@ -80,8 +82,8 @@ def _defs(layout: SolarSystemLayout, theme: dict, animate: bool) -> list[str]:
     parts.append(
         _tag("radialGradient", {"id": "sunGlow", "cx": "0.5", "cy": "0.5", "r": "0.5"})
     )
-    parts.append(_tag("stop", {"offset": "0", "stop-color": "#ffe3b3", "stop-opacity": "0.34"}, close=True))
-    parts.append(_tag("stop", {"offset": "0.45", "stop-color": "#ffb15c", "stop-opacity": "0.16"}, close=True))
+    parts.append(_tag("stop", {"offset": "0", "stop-color": "#ffe3b3", "stop-opacity": "0.18"}, close=True))
+    parts.append(_tag("stop", {"offset": "0.5", "stop-color": "#ffb15c", "stop-opacity": "0.08"}, close=True))
     parts.append(_tag("stop", {"offset": "1", "stop-color": "#ff8a3c", "stop-opacity": "0"}, close=True))
     parts.append("</radialGradient>")
 
@@ -97,15 +99,15 @@ def _defs(layout: SolarSystemLayout, theme: dict, animate: bool) -> list[str]:
     parts.append(
         _tag("radialGradient", {"id": "sunWarm", "cx": "0.5", "cy": "0.5", "r": "0.5"})
     )
-    parts.append(_tag("stop", {"offset": "0", "stop-color": "#ffc477", "stop-opacity": "0"}, close=True))
-    parts.append(_tag("stop", {"offset": "0.72", "stop-color": "#ff9a3d", "stop-opacity": "0.08"}, close=True))
-    parts.append(_tag("stop", {"offset": "1", "stop-color": "#ff6a00", "stop-opacity": "0.38"}, close=True))
+    parts.append(_tag("stop", {"offset": "0.75", "stop-color": "#ffc477", "stop-opacity": "0"}, close=True))
+    parts.append(_tag("stop", {"offset": "1", "stop-color": "#ff9a3d", "stop-opacity": "0.12"}, close=True))
     parts.append("</radialGradient>")
 
     parts.append(
         _tag("radialGradient", {"id": "cometGlow", "cx": "0.5", "cy": "0.5", "r": "0.5"})
     )
-    parts.append(_tag("stop", {"offset": "0", "stop-color": "#ffffff", "stop-opacity": "0.42"}, close=True))
+    parts.append(_tag("stop", {"offset": "0", "stop-color": "#ffffff", "stop-opacity": "0.65"}, close=True))
+    parts.append(_tag("stop", {"offset": "0.45", "stop-color": "#ffffff", "stop-opacity": "0.26"}, close=True))
     parts.append(_tag("stop", {"offset": "1", "stop-color": "#ffffff", "stop-opacity": "0"}, close=True))
     parts.append("</radialGradient>")
 
@@ -206,8 +208,8 @@ def _orbits(layout: SolarSystemLayout, theme: dict) -> list[str]:
                     "rx": _n(planet.orbit * layout.aspect),
                     "ry": _n(planet.orbit),
                     "stroke": "#ffffff",
-                    "stroke-width": "0.8",
-                    "stroke-opacity": "0.10",
+                    "stroke-width": "0.75",
+                    "stroke-opacity": "0.20",
                 },
                 close=True,
             )
@@ -221,33 +223,7 @@ def _sun(layout: SolarSystemLayout, theme: dict) -> list[str]:
     cy = _n(layout.cy)
     radius = layout.sun_radius
     parts = [
-        _tag("circle", {"cx": cx, "cy": cy, "r": _n(radius * 3.6), "fill": "url(#sunGlow)"}, close=True),
-        _tag(
-            "circle",
-            {
-                "cx": cx,
-                "cy": cy,
-                "r": _n(radius * 1.55),
-                "fill": "none",
-                "stroke": "#ffd7a3",
-                "stroke-width": "0.9",
-                "stroke-opacity": "0.20",
-            },
-            close=True,
-        ),
-        _tag(
-            "circle",
-            {
-                "cx": cx,
-                "cy": cy,
-                "r": _n(radius * 1.24),
-                "fill": "none",
-                "stroke": "#ffb15c",
-                "stroke-width": "1.1",
-                "stroke-opacity": "0.14",
-            },
-            close=True,
-        ),
+        _tag("circle", {"cx": cx, "cy": cy, "r": _n(radius * 1.55), "fill": "url(#sunGlow)"}, close=True),
         _tag("circle", {"cx": cx, "cy": cy, "r": _n(radius), "fill": "url(#sunFallback)"}, close=True),
     ]
     if layout.avatar_uri:
@@ -297,9 +273,9 @@ def _sun(layout: SolarSystemLayout, theme: dict) -> list[str]:
                 "cy": cy,
                 "r": _n(radius),
                 "fill": "none",
-                "stroke": "#ffe3b0",
-                "stroke-width": "1.2",
-                "stroke-opacity": "0.38",
+                "stroke": "#ffd166",
+                "stroke-width": "1.3",
+                "stroke-opacity": "0.75",
             },
             close=True,
         )
@@ -310,11 +286,11 @@ def _sun(layout: SolarSystemLayout, theme: dict) -> list[str]:
             {
                 "cx": cx,
                 "cy": cy,
-                "r": _n(radius + 2.2),
+                "r": _n(radius + 1.8),
                 "fill": "none",
-                "stroke": "#ff8a3c",
-                "stroke-width": "0.7",
-                "stroke-opacity": "0.22",
+                "stroke": "#ff9a3d",
+                "stroke-width": "0.6",
+                "stroke-opacity": "0.25",
             },
             close=True,
         )
@@ -335,58 +311,7 @@ def _motion(path: str, duration: float, begin: float, *, rotate: bool = False) -
     return _tag("animateMotion", attrs, close=True)
 
 
-def _rotation(angle_from: float, angle_to: float, duration: float, begin: float) -> str:
-    return _tag(
-        "animateTransform",
-        {
-            "attributeName": "transform",
-            "type": "rotate",
-            "from": _n(angle_from),
-            "to": _n(angle_to),
-            "dur": f"{_n(duration)}s",
-            "begin": f"{_n(begin)}s",
-            "repeatCount": "indefinite",
-        },
-        close=True,
-    )
 
-
-def _radial_label(
-    *,
-    angle: float,
-    radius: float,
-    text: str,
-    size: float,
-    period: float,
-    begin: float,
-    direction: int,
-    animated: bool,
-) -> list[str]:
-    """A label that rides the outward radial ring and always stays upright."""
-
-    if not animated:
-        radians = math.radians(angle)
-        return _text_tag(
-            _label_attrs(
-                math.cos(radians) * radius,
-                math.sin(radians) * radius + 3.0,
-                size,
-                "#ffffff",
-                "middle",
-            ),
-            text,
-        )
-
-    span = 360.0 * direction
-    return [
-        _tag("g", {}),
-        _rotation(angle, angle + span, period, begin),
-        _tag("g", {"transform": f"translate({_n(radius)} 0)"}),
-        _tag("g", {}),
-        _rotation(-angle, -angle - span, period, begin),
-        *_text_tag(_label_attrs(0, 3.0, size, "#ffffff", "middle"), text),
-        "</g></g></g>",
-    ]
 
 
 def _moon_group(moon: Moon, theme: dict, animated: bool) -> list[str]:
@@ -408,7 +333,7 @@ def _moon_group(moon: Moon, theme: dict, animated: bool) -> list[str]:
     parts.append(
         _tag(
             "circle",
-            {"r": _n(moon.radius * 2.7), "fill": moon.color, "fill-opacity": "0.13"},
+            {"r": _n(moon.radius * 2.2), "fill": moon.color, "fill-opacity": "0.22"},
             close=True,
         )
     )
@@ -421,21 +346,9 @@ def _moon_group(moon: Moon, theme: dict, animated: bool) -> list[str]:
                 "cy": _n(-moon.radius * 0.30),
                 "r": _n(moon.radius * 0.34),
                 "fill": "#ffffff",
-                "fill-opacity": "0.55",
+                "fill-opacity": "0.75",
             },
             close=True,
-        )
-    )
-    parts.extend(
-        _radial_label(
-            angle=moon.start_angle,
-            radius=moon.label_radius,
-            text=moon.label,
-            size=8.0,
-            period=moon.period,
-            begin=moon.begin,
-            direction=moon.direction,
-            animated=animated,
         )
     )
     parts.append("</g></a>")
@@ -458,6 +371,25 @@ def _planet_group(planet: Planet, index: int, theme: dict, animated: bool) -> li
     parts.append(_tag("title", {}))
     parts.append(_esc(planet.language))
     parts.append("</title>")
+
+    # Subtle circular orbit rings for moons around the parent planet
+    drawn_moon_orbits: set[float] = set()
+    for moon in planet.moons:
+        if moon.orbit not in drawn_moon_orbits:
+            drawn_moon_orbits.add(moon.orbit)
+            parts.append(
+                _tag(
+                    "circle",
+                    {
+                        "r": _n(moon.orbit),
+                        "fill": "none",
+                        "stroke": "#ffffff",
+                        "stroke-width": "0.5",
+                        "stroke-opacity": "0.07",
+                    },
+                    close=True,
+                )
+            )
 
     back_moons = [moon for moon in planet.moons if moon.static_y <= 0]
     front_moons = [moon for moon in planet.moons if moon.static_y > 0]
@@ -516,19 +448,20 @@ def _planet_group(planet: Planet, index: int, theme: dict, animated: bool) -> li
         )
     )
 
+    # Programming language vector logo inside the planet
+    parts.append(get_planet_logo(planet.language, planet.radius, planet.color))
+
     for moon in front_moons:
         parts.extend(_moon_group(moon, theme, animated))
 
+    # Language name directly underneath its planet
+    label_gap = max(9.0, min(15.0, planet.radius * 0.35 + 7.0))
+    label_y = planet.radius + label_gap
+    label_size = max(8.5, min(12.2, planet.radius * 0.4 + 6.0))
     parts.extend(
-        _radial_label(
-            angle=planet.start_angle,
-            radius=planet.label_radius,
-            text=planet.label,
-            size=12.2,
-            period=planet.period,
-            begin=planet.begin,
-            direction=planet.direction,
-            animated=animated,
+        _text_tag(
+            _label_attrs(0, label_y, label_size, "#ffffff", "middle"),
+            planet.language,
         )
     )
     parts.append("</g></a>")
@@ -542,12 +475,19 @@ def _comet_tail(comet: Comet) -> list[str]:
     unit_x = dx / length
     unit_y = dy / length
     parts: list[str] = []
+    # Elongated trail (60-80% longer) with smooth taper and gradual opacity fade
     for distance, radius, opacity in (
-        (44.0, 1.3, "0.05"),
-        (33.0, 1.7, "0.08"),
-        (22.0, 2.1, "0.13"),
-        (12.0, 2.5, "0.20"),
-        (5.0, 2.9, "0.30"),
+        (116.0, 1.2, "0.03"),
+        (100.0, 1.5, "0.05"),
+        (86.0, 1.9, "0.08"),
+        (72.0, 2.3, "0.12"),
+        (59.0, 2.8, "0.17"),
+        (47.0, 3.3, "0.23"),
+        (36.0, 3.8, "0.30"),
+        (26.0, 4.3, "0.39"),
+        (17.0, 4.7, "0.49"),
+        (10.0, 5.0, "0.60"),
+        (4.0, 5.2, "0.74"),
     ):
         parts.append(
             _tag(
@@ -562,9 +502,10 @@ def _comet_tail(comet: Comet) -> list[str]:
                 close=True,
             )
         )
-    parts.append(_tag("circle", {"r": "9", "fill": "url(#cometGlow)"}, close=True))
-    parts.append(_tag("circle", {"r": "3.2", "fill": "#ffffff", "fill-opacity": "0.85"}, close=True))
-    parts.append(_tag("circle", {"r": "1.8", "fill": "#ffffff"}, close=True))
+    # Larger comet head (radius ~5.0) with stronger white glow
+    parts.append(_tag("circle", {"r": "16", "fill": "url(#cometGlow)"}, close=True))
+    parts.append(_tag("circle", {"r": "5.0", "fill": "#ffffff", "fill-opacity": "0.92"}, close=True))
+    parts.append(_tag("circle", {"r": "2.8", "fill": "#ffffff"}, close=True))
     return parts
 
 
@@ -572,7 +513,7 @@ def _comet_group(comet: Comet, theme: dict, animated: bool) -> list[str]:
     """A pure-white comet that always travels upper-left to lower-right."""
 
     label = _text_tag(
-        _label_attrs(13, 4, 9.8, "#ffffff", "start"),
+        _label_attrs(15, 4, 9.8, "#ffffff", "start"),
         comet.label,
     )
 
@@ -651,6 +592,35 @@ def _comet_group(comet: Comet, theme: dict, animated: bool) -> list[str]:
     return parts
 
 
+def _header_text(layout: SolarSystemLayout) -> list[str]:
+    attrs = {
+        "x": "38",
+        "y": "40",
+        "font-family": MONO_FONT,
+        "font-size": "11.5",
+        "font-weight": "500",
+        "letter-spacing": "1.4",
+        "fill": "#888888",
+    }
+    content = f"SOLAR SYSTEM · @{layout.user.login}"
+    return _text_tag(attrs, content)
+
+
+def _legend_text(layout: SolarSystemLayout) -> list[str]:
+    attrs = {
+        "x": _n(layout.width - 38),
+        "y": _n(layout.height - 28),
+        "text-anchor": "end",
+        "font-family": MONO_FONT,
+        "font-size": "10.5",
+        "font-weight": "400",
+        "letter-spacing": "1.2",
+        "fill": "#666666",
+    }
+    content = "planets = languages · moons = repos · comets = recent pushes"
+    return _text_tag(attrs, content)
+
+
 def _write_atomic(path: str | os.PathLike[str], content: str) -> None:
     target = Path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -703,6 +673,8 @@ def render_svg(
     parts.extend(_stars(layout, palette))
     parts.extend(_orbits(layout, palette))
     parts.extend(_sun(layout, palette))
+    parts.extend(_header_text(layout))
+    parts.extend(_legend_text(layout))
 
     if animate:
         parts.append(_tag("g", {"class": "animated"}))

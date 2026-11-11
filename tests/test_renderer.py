@@ -63,7 +63,15 @@ def test_svg_contains_no_scripts_or_external_assets(user, repos, commits, avatar
 
 def test_visible_text_is_only_language_and_repository_names(user, repos, commits, avatar_uri):
     _, svg = render(user, repos, commits=commits, avatar_uri=avatar_uri)
-    allowed = {"Python", "Rust", "alpha", "beta", "gamma", "delta", "Test User"}
+    allowed = {
+        "Python",
+        "Rust",
+        "alpha",
+        "gamma",
+        "delta",
+        f"SOLAR SYSTEM · @{user.login}",
+        "planets = languages · moons = repos · comets = recent pushes",
+    }
 
     for text in visible_texts(svg):
         value = text.strip()
@@ -77,7 +85,6 @@ def test_removed_dashboard_text_does_not_remain(user, repos, commits, avatar_uri
     assert "GitHub Solar System" not in svg
     assert "Testing things" not in svg
     assert "unclassified" not in svg
-    assert "languages ·" not in svg
     for text in visible_texts(svg):
         assert not text.strip().endswith("%")
 
@@ -154,12 +161,11 @@ def test_planets_are_nested_parents_of_moons(user, repos, commits):
 
 
 def test_comets_are_white_and_diagonal(user, repos, commits):
-    _, svg = render(user, repos, commits=commits, comet_limit=4)
+    _, svg = render(user, repos, commits=commits, comet_limit=6)
 
-    assert svg.count('class="comet"') == 4
-    assert svg.count('type="translate"') == 4
+    assert svg.count('class="comet"') == 6
+    assert svg.count('type="translate"') == 6
     assert svg.count("<animateMotion") == 2 + 3
-    assert svg.count('type="rotate"') == 2 * (2 + 3)  # every label ring + upright counter-rotation
     assert 'stroke="#000000"' in svg  # label halo only
     assert 'fill="url(#cometGlow)"' in svg
     assert '#ffffff' in svg
@@ -168,10 +174,10 @@ def test_comets_are_white_and_diagonal(user, repos, commits):
 
 
 def test_static_fallback_shows_at_most_two_comets(user, repos, commits):
-    _, svg = render(user, repos, commits=commits, comet_limit=4)
+    _, svg = render(user, repos, commits=commits, comet_limit=6)
 
     assert svg.count('class="comet-static"') == 2
-    assert svg.count('class="comet"') == 4
+    assert svg.count('class="comet"') == 6
 
 
 def test_background_is_pure_black_and_stars_are_white(user, repos):

@@ -7,8 +7,8 @@ An animated orbit of 8 public repositories across 3 programming languages.
 </desc>
 <defs>
 <radialGradient id="sunGlow" cx="0.5" cy="0.5" r="0.5">
-<stop offset="0" stop-color="#ffe3b3" stop-opacity="0.34"/>
-<stop offset="0.45" stop-color="#ffb15c" stop-opacity="0.16"/>
+<stop offset="0" stop-color="#ffe3b3" stop-opacity="0.18"/>
+<stop offset="0.5" stop-color="#ffb15c" stop-opacity="0.08"/>
 <stop offset="1" stop-color="#ff8a3c" stop-opacity="0"/>
 </radialGradient>
 <radialGradient id="sunFallback" cx="0.38" cy="0.32" r="0.78">
@@ -18,12 +18,12 @@ An animated orbit of 8 public repositories across 3 programming languages.
 <stop offset="1" stop-color="#d9541b"/>
 </radialGradient>
 <radialGradient id="sunWarm" cx="0.5" cy="0.5" r="0.5">
-<stop offset="0" stop-color="#ffc477" stop-opacity="0"/>
-<stop offset="0.72" stop-color="#ff9a3d" stop-opacity="0.08"/>
-<stop offset="1" stop-color="#ff6a00" stop-opacity="0.38"/>
+<stop offset="0.75" stop-color="#ffc477" stop-opacity="0"/>
+<stop offset="1" stop-color="#ff9a3d" stop-opacity="0.12"/>
 </radialGradient>
 <radialGradient id="cometGlow" cx="0.5" cy="0.5" r="0.5">
-<stop offset="0" stop-color="#ffffff" stop-opacity="0.42"/>
+<stop offset="0" stop-color="#ffffff" stop-opacity="0.65"/>
+<stop offset="0.45" stop-color="#ffffff" stop-opacity="0.26"/>
 <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
 </radialGradient>
 <clipPath id="avatarClip" clipPathUnits="userSpaceOnUse">
@@ -238,453 +238,402 @@ An animated orbit of 8 public repositories across 3 programming languages.
 <circle class="tw" cx="985.31" cy="557.11" r="0.74" fill-opacity="0.28" style="animation-delay:-0.28s"/>
 </g>
 <g class="orbits" fill="none">
-<ellipse cx="600" cy="337.5" rx="123.97" ry="79.98" stroke="#ffffff" stroke-width="0.8" stroke-opacity="0.10"/>
-<ellipse cx="600" cy="337.5" rx="215.23" ry="138.86" stroke="#ffffff" stroke-width="0.8" stroke-opacity="0.10"/>
-<ellipse cx="600" cy="337.5" rx="293.77" ry="189.53" stroke="#ffffff" stroke-width="0.8" stroke-opacity="0.10"/>
+<ellipse cx="600" cy="337.5" rx="179.1" ry="83.69" stroke="#ffffff" stroke-width="0.75" stroke-opacity="0.20"/>
+<ellipse cx="600" cy="337.5" rx="335.47" ry="156.76" stroke="#ffffff" stroke-width="0.75" stroke-opacity="0.20"/>
+<ellipse cx="600" cy="337.5" rx="462.78" ry="216.25" stroke="#ffffff" stroke-width="0.75" stroke-opacity="0.20"/>
 </g>
-<circle cx="600" cy="337.5" r="145.8" fill="url(#sunGlow)"/>
-<circle cx="600" cy="337.5" r="62.77" fill="none" stroke="#ffd7a3" stroke-width="0.9" stroke-opacity="0.20"/>
-<circle cx="600" cy="337.5" r="50.22" fill="none" stroke="#ffb15c" stroke-width="1.1" stroke-opacity="0.14"/>
+<circle cx="600" cy="337.5" r="62.77" fill="url(#sunGlow)"/>
 <circle cx="600" cy="337.5" r="40.5" fill="url(#sunFallback)"/>
 <g clip-path="url(#avatarClip)">
 <image x="559.5" y="297" width="81" height="81" href="data:image/jpeg;base64,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" preserveAspectRatio="xMidYMid slice"/>
 <circle cx="600" cy="337.5" r="40.5" fill="url(#sunWarm)"/>
 </g>
-<circle cx="600" cy="337.5" r="40.5" fill="none" stroke="#ffe3b0" stroke-width="1.2" stroke-opacity="0.38"/>
-<circle cx="600" cy="337.5" r="42.7" fill="none" stroke="#ff8a3c" stroke-width="0.7" stroke-opacity="0.22"/>
+<circle cx="600" cy="337.5" r="40.5" fill="none" stroke="#ffd166" stroke-width="1.3" stroke-opacity="0.75"/>
+<circle cx="600" cy="337.5" r="42.3" fill="none" stroke="#ff9a3d" stroke-width="0.6" stroke-opacity="0.25"/>
+<text x="38" y="40" font-family="'SF Mono', Monaco, 'Fira Code', 'Roboto Mono', 'Cascadia Code', Menlo, Consolas, monospace" font-size="11.5" font-weight="500" letter-spacing="1.4" fill="#888888">
+SOLAR SYSTEM · @Shadow-Monarch-33
+</text>
+<text x="1162" y="647" text-anchor="end" font-family="'SF Mono', Monaco, 'Fira Code', 'Roboto Mono', 'Cascadia Code', Menlo, Consolas, monospace" font-size="10.5" font-weight="400" letter-spacing="1.2" fill="#666666">
+planets = languages · moons = repos · comets = recent pushes
+</text>
 <g class="animated">
 <a href="https://github.com/Shadow-Monarch-33?tab=repositories&amp;language=python" target="_blank" rel="noopener">
-<g class="planet-motion" transform="translate(575.71 259.07)">
-<animateMotion path="M 0 0 A 123.97 79.98 0 0 0 48.58 156.85 A 123.97 79.98 0 0 0 0 0" dur="50.9s" begin="-30.99s" repeatCount="indefinite" fill="freeze"/>
+<g class="planet-motion" transform="translate(564.92 255.44)">
+<animateMotion path="M 0 0 A 179.05 83.69 0 0 0 70.17 164.13 A 179.05 83.69 0 0 0 0 0" dur="50.12s" begin="-30.52s" repeatCount="indefinite" fill="freeze"/>
 <title>
 Python
 </title>
+<circle r="27.26" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.07"/>
 <a href="https://github.com/Shadow-Monarch-33/Axiom-Generative-LLM-Client" target="_blank" rel="noopener">
-<g class="moon-motion" transform="translate(-19.72 -9.13)">
-<animateMotion path="M 0 0 A 21.73 21.73 0 0 1 39.44 18.26 A 21.73 21.73 0 0 1 0 0" dur="16.72s" begin="-6s" repeatCount="indefinite" fill="freeze"/>
+<g class="moon-motion" transform="translate(-24.74 -11.46)">
+<animateMotion path="M 0 0 A 27.26 27.26 0 0 1 49.48 22.91 A 27.26 27.26 0 0 1 0 0" dur="16.72s" begin="-6s" repeatCount="indefinite" fill="freeze"/>
 <title>
 Axiom-Generative-LLM-Client
 </title>
-<circle r="1.78" fill="#96b6d0" fill-opacity="0.13"/>
-<circle r="0.66" fill="#96b6d0"/>
-<circle cx="-0.18" cy="-0.2" r="0.22" fill="#ffffff" fill-opacity="0.55"/>
-<g>
-<animateTransform attributeName="transform" type="rotate" from="204.85" to="564.85" dur="16.72s" begin="-6s" repeatCount="indefinite"/>
-<g transform="translate(86.9 0)">
-<g>
-<animateTransform attributeName="transform" type="rotate" from="-204.85" to="-564.85" dur="16.72s" begin="-6s" repeatCount="indefinite"/>
-<text x="0" y="3" text-anchor="middle" font-size="8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="1.92" stroke-linejoin="round" stroke-linecap="round">
-Axiom-Generative-LLM-Client
-</text>
-</g></g></g>
+<circle r="2.24" fill="#b8cee0" fill-opacity="0.22"/>
+<circle r="1.02" fill="#b8cee0"/>
+<circle cx="-0.29" cy="-0.31" r="0.35" fill="#ffffff" fill-opacity="0.75"/>
 </g></a>
 <a href="https://github.com/Shadow-Monarch-33/Casefile-042" target="_blank" rel="noopener">
-<g class="moon-motion" transform="translate(9.33 -19.63)">
-<animateMotion path="M 0 0 A 21.73 21.73 0 0 0 -18.66 39.25 A 21.73 21.73 0 0 0 0 0" dur="16.72s" begin="-2.99s" repeatCount="indefinite" fill="freeze"/>
+<g class="moon-motion" transform="translate(11.71 -24.62)">
+<animateMotion path="M 0 0 A 27.26 27.26 0 0 0 -23.41 49.25 A 27.26 27.26 0 0 0 0 0" dur="16.72s" begin="-2.99s" repeatCount="indefinite" fill="freeze"/>
 <title>
 Casefile-042
 </title>
-<circle r="1.78" fill="#96b6d0" fill-opacity="0.13"/>
-<circle r="0.66" fill="#96b6d0"/>
-<circle cx="-0.18" cy="-0.2" r="0.22" fill="#ffffff" fill-opacity="0.55"/>
-<g>
-<animateTransform attributeName="transform" type="rotate" from="295.43" to="-64.57" dur="16.72s" begin="-2.99s" repeatCount="indefinite"/>
-<g transform="translate(47.73 0)">
-<g>
-<animateTransform attributeName="transform" type="rotate" from="-295.43" to="64.57" dur="16.72s" begin="-2.99s" repeatCount="indefinite"/>
-<text x="0" y="3" text-anchor="middle" font-size="8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="1.92" stroke-linejoin="round" stroke-linecap="round">
-Casefile-042
-</text>
-</g></g></g>
+<circle r="2.24" fill="#b8cee0" fill-opacity="0.22"/>
+<circle r="1.02" fill="#b8cee0"/>
+<circle cx="-0.29" cy="-0.31" r="0.35" fill="#ffffff" fill-opacity="0.75"/>
 </g></a>
-<circle r="29.3" fill="url(#ph0)"/>
-<circle r="12.74" fill="url(#pg0)" stroke="#6895bc" stroke-width="0.7" stroke-opacity="0.32"/>
-<ellipse cx="-3.44" cy="-4.2" rx="4.33" ry="2.55" fill="#ffffff" fill-opacity="0.22"/>
-<path d="M -11.72 2.8 A 12.74 12.74 0 0 0 11.72 2.55" fill="none" stroke="#0d1b28" stroke-width="0.7" stroke-opacity="0.55"/>
+<circle r="47.98" fill="url(#ph0)"/>
+<circle r="20.86" fill="url(#pg0)" stroke="#6895bc" stroke-width="0.7" stroke-opacity="0.32"/>
+<ellipse cx="-5.63" cy="-6.88" rx="7.09" ry="4.17" fill="#ffffff" fill-opacity="0.22"/>
+<path d="M -19.19 4.59 A 20.86 20.86 0 0 0 19.19 4.17" fill="none" stroke="#0d1b28" stroke-width="0.7" stroke-opacity="0.55"/>
+<g class="planet-logo" transform="translate(-11.99 -11.99) scale(0.9995)"><path d="M11.858 0c-.978.005-1.913.088-2.736.234C6.7.662 6.26 1.558 6.26 3.21v2.182h5.725v.727H4.111c-1.664 0-3.121 1-3.577 2.903-.526 2.181-.549 3.542 0 5.82.407 1.694 1.379 2.902 3.043 2.902h1.969v-2.616c0-1.89 1.635-3.557 3.576-3.557h5.72c1.591 0 2.862-1.31 2.862-2.91v-5.45c0-1.553-1.309-2.718-2.863-2.977A18 18 0 0 0 11.858 0M8.762 1.755c.591 0 1.074.491 1.074 1.095 0 .601-.483 1.087-1.074 1.087A1.08 1.08 0 0 1 7.688 2.85c0-.604.48-1.095 1.074-1.095m9.656 4.364v2.543c0 1.971-1.671 3.63-3.577 3.63H9.122c-1.566 0-2.862 1.34-2.862 2.91v5.452c0 1.551 1.349 2.464 2.862 2.91 1.813.532 3.55.628 5.72 0 1.44-.418 2.862-1.258 2.862-2.91V18.47h-5.719v-.727h8.582c1.664 0 2.284-1.16 2.862-2.903.598-1.793.573-3.518 0-5.819-.41-1.656-1.196-2.903-2.862-2.903zm-3.216 13.807a1.08 1.08 0 0 1 1.074 1.088c0 .604-.48 1.094-1.074 1.094-.592 0-1.075-.49-1.075-1.094 0-.601.483-1.088 1.075-1.088" fill="#ffffff" fill-opacity="0.95"/></g>
 <a href="https://github.com/Shadow-Monarch-33/github-solar-system" target="_blank" rel="noopener">
-<g class="moon-motion" transform="translate(19.78 9.01)">
-<animateMotion path="M 0 0 A 21.73 21.73 0 0 1 -39.55 -18.02 A 21.73 21.73 0 0 1 0 0" dur="16.72s" begin="-16.46s" repeatCount="indefinite" fill="freeze"/>
+<g class="moon-motion" transform="translate(24.81 11.3)">
+<animateMotion path="M 0 0 A 27.26 27.26 0 0 1 -49.62 -22.6 A 27.26 27.26 0 0 1 0 0" dur="16.72s" begin="-16.46s" repeatCount="indefinite" fill="freeze"/>
 <title>
 github-solar-system
 </title>
-<circle r="1.78" fill="#96b6d0" fill-opacity="0.13"/>
-<circle r="0.66" fill="#96b6d0"/>
-<circle cx="-0.18" cy="-0.2" r="0.22" fill="#ffffff" fill-opacity="0.55"/>
-<g>
-<animateTransform attributeName="transform" type="rotate" from="24.49" to="384.49" dur="16.72s" begin="-16.46s" repeatCount="indefinite"/>
-<g transform="translate(65.3 0)">
-<g>
-<animateTransform attributeName="transform" type="rotate" from="-24.49" to="-384.49" dur="16.72s" begin="-16.46s" repeatCount="indefinite"/>
-<text x="0" y="3" text-anchor="middle" font-size="8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="1.92" stroke-linejoin="round" stroke-linecap="round">
-github-solar-system
-</text>
-</g></g></g>
+<circle r="2.24" fill="#b8cee0" fill-opacity="0.22"/>
+<circle r="1.02" fill="#b8cee0"/>
+<circle cx="-0.29" cy="-0.31" r="0.35" fill="#ffffff" fill-opacity="0.75"/>
 </g></a>
 <a href="https://github.com/Shadow-Monarch-33/Web-Scraper" target="_blank" rel="noopener">
-<g class="moon-motion" transform="translate(-10.88 18.81)">
-<animateMotion path="M 0 0 A 21.73 21.73 0 0 0 21.76 -37.62 A 21.73 21.73 0 0 0 0 0" dur="16.72s" begin="-9.04s" repeatCount="indefinite" fill="freeze"/>
+<g class="moon-motion" transform="translate(-13.65 23.6)">
+<animateMotion path="M 0 0 A 27.26 27.26 0 0 0 27.3 -47.2 A 27.26 27.26 0 0 0 0 0" dur="16.72s" begin="-9.04s" repeatCount="indefinite" fill="freeze"/>
 <title>
 Web-Scraper
 </title>
-<circle r="1.78" fill="#96b6d0" fill-opacity="0.13"/>
-<circle r="0.66" fill="#96b6d0"/>
-<circle cx="-0.18" cy="-0.2" r="0.22" fill="#ffffff" fill-opacity="0.55"/>
-<g>
-<animateTransform attributeName="transform" type="rotate" from="120.05" to="-239.95" dur="16.72s" begin="-9.04s" repeatCount="indefinite"/>
-<g transform="translate(47.73 0)">
-<g>
-<animateTransform attributeName="transform" type="rotate" from="-120.05" to="239.95" dur="16.72s" begin="-9.04s" repeatCount="indefinite"/>
-<text x="0" y="3" text-anchor="middle" font-size="8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="1.92" stroke-linejoin="round" stroke-linecap="round">
-Web-Scraper
-</text>
-</g></g></g>
+<circle r="2.24" fill="#b8cee0" fill-opacity="0.22"/>
+<circle r="1.02" fill="#b8cee0"/>
+<circle cx="-0.29" cy="-0.31" r="0.35" fill="#ffffff" fill-opacity="0.75"/>
 </g></a>
-<g>
-<animateTransform attributeName="transform" type="rotate" from="258.7" to="-101.3" dur="50.9s" begin="-30.99s" repeatCount="indefinite"/>
-<g transform="translate(102.9 0)">
-<g>
-<animateTransform attributeName="transform" type="rotate" from="-258.7" to="101.3" dur="50.9s" begin="-30.99s" repeatCount="indefinite"/>
-<text x="0" y="3" text-anchor="middle" font-size="12.2" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.93" stroke-linejoin="round" stroke-linecap="round">
+<text x="0" y="35.16" text-anchor="middle" font-size="12.2" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.93" stroke-linejoin="round" stroke-linecap="round">
 Python
 </text>
-</g></g></g>
 </g></a>
 <a href="https://github.com/Shadow-Monarch-33?tab=repositories&amp;language=typescript" target="_blank" rel="noopener">
-<g class="planet-motion" transform="translate(789.8 402.99)">
-<animateMotion path="M 0 0 A 215.24 138.86 0 0 1 -379.6 -130.98 A 215.24 138.86 0 0 1 0 0" dur="63.79s" begin="-42.78s" repeatCount="indefinite" fill="freeze"/>
+<g class="planet-motion" transform="translate(895.76 411.43)">
+<animateMotion path="M 0 0 A 335.4 156.76 0 0 1 -591.52 -147.87 A 335.4 156.76 0 0 1 0 0" dur="63.99s" begin="-42.92s" repeatCount="indefinite" fill="freeze"/>
 <title>
 TypeScript
 </title>
+<circle r="24.79" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.07"/>
 <a href="https://github.com/Shadow-Monarch-33/PlateCost" target="_blank" rel="noopener">
-<g class="moon-motion" transform="translate(-19.71 -6.24)">
-<animateMotion path="M 0 0 A 20.67 20.67 0 0 1 39.41 12.48 A 20.67 20.67 0 0 1 0 0" dur="20.82s" begin="-14.07s" repeatCount="indefinite" fill="freeze"/>
+<g class="moon-motion" transform="translate(-23.64 -7.48)">
+<animateMotion path="M 0 0 A 24.79 24.79 0 0 1 47.27 14.96 A 24.79 24.79 0 0 1 0 0" dur="20.82s" begin="-14.07s" repeatCount="indefinite" fill="freeze"/>
 <title>
 PlateCost
 </title>
-<circle r="1.78" fill="#94b9e1" fill-opacity="0.13"/>
-<circle r="0.66" fill="#94b9e1"/>
-<circle cx="-0.18" cy="-0.2" r="0.22" fill="#ffffff" fill-opacity="0.55"/>
-<g>
-<animateTransform attributeName="transform" type="rotate" from="197.57" to="557.57" dur="20.82s" begin="-14.07s" repeatCount="indefinite"/>
-<g transform="translate(46.67 0)">
-<g>
-<animateTransform attributeName="transform" type="rotate" from="-197.57" to="-557.57" dur="20.82s" begin="-14.07s" repeatCount="indefinite"/>
-<text x="0" y="3" text-anchor="middle" font-size="8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="1.92" stroke-linejoin="round" stroke-linecap="round">
-PlateCost
-</text>
-</g></g></g>
+<circle r="2.24" fill="#b7d0eb" fill-opacity="0.22"/>
+<circle r="1.02" fill="#b7d0eb"/>
+<circle cx="-0.29" cy="-0.31" r="0.35" fill="#ffffff" fill-opacity="0.75"/>
 </g></a>
-<circle r="26.86" fill="url(#ph1)"/>
-<circle r="11.68" fill="url(#pg1)" stroke="#649ad4" stroke-width="0.7" stroke-opacity="0.32"/>
-<ellipse cx="-3.15" cy="-3.85" rx="3.97" ry="2.34" fill="#ffffff" fill-opacity="0.22"/>
-<path d="M -10.75 2.57 A 11.68 11.68 0 0 0 10.75 2.34" fill="none" stroke="#0c1d30" stroke-width="0.7" stroke-opacity="0.55"/>
-<g>
-<animateTransform attributeName="transform" type="rotate" from="28.14" to="388.14" dur="63.79s" begin="-42.78s" repeatCount="indefinite"/>
-<g transform="translate(62.67 0)">
-<g>
-<animateTransform attributeName="transform" type="rotate" from="-28.14" to="-388.14" dur="63.79s" begin="-42.78s" repeatCount="indefinite"/>
-<text x="0" y="3" text-anchor="middle" font-size="12.2" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.93" stroke-linejoin="round" stroke-linecap="round">
+<circle r="42.3" fill="url(#ph1)"/>
+<circle r="18.39" fill="url(#pg1)" stroke="#649ad4" stroke-width="0.7" stroke-opacity="0.32"/>
+<ellipse cx="-4.97" cy="-6.07" rx="6.25" ry="3.68" fill="#ffffff" fill-opacity="0.22"/>
+<path d="M -16.92 4.05 A 18.39 18.39 0 0 0 16.92 3.68" fill="none" stroke="#0c1d30" stroke-width="0.7" stroke-opacity="0.55"/>
+<g class="planet-logo" transform="translate(-10.57 -10.57) scale(0.8812)"><path d="M1.125 0C.502 0 0 .502 0 1.125v21.75C0 23.498.502 24 1.125 24h21.75c.623 0 1.125-.502 1.125-1.125V1.125C24 .502 23.498 0 22.875 0zm17.363 9.75c.612 0 1.154.037 1.627.111a6.38 6.38 0 0 1 1.306.34v2.458a3.95 3.95 0 0 0-.643-.361 5.093 5.093 0 0 0-.717-.26 5.453 5.453 0 0 0-1.426-.2c-.3 0-.573.028-.819.086a2.1 2.1 0 0 0-.623.242c-.17.104-.3.229-.393.374a.888.888 0 0 0-.14.49c0 .196.053.373.156.529.104.156.252.304.443.444s.423.276.696.41c.273.135.582.274.926.416.47.197.892.407 1.266.628.374.222.695.473.963.753.268.279.472.598.614.957.142.359.214.776.214 1.253 0 .657-.125 1.21-.373 1.656a3.033 3.033 0 0 1-1.012 1.085 4.38 4.38 0 0 1-1.487.596c-.566.12-1.163.18-1.79.18a9.916 9.916 0 0 1-1.84-.164 5.544 5.544 0 0 1-1.512-.493v-2.63a5.033 5.033 0 0 0 3.237 1.2c.333 0 .624-.03.872-.09.249-.06.456-.144.623-.25.166-.108.29-.234.373-.38a1.023 1.023 0 0 0-.074-1.089 2.12 2.12 0 0 0-.537-.5 5.597 5.597 0 0 0-.807-.444 27.72 27.72 0 0 0-1.007-.436c-.918-.383-1.602-.852-2.053-1.405-.45-.553-.676-1.222-.676-2.005 0-.614.123-1.141.369-1.582.246-.441.58-.804 1.004-1.089a4.494 4.494 0 0 1 1.47-.629 7.536 7.536 0 0 1 1.77-.201zm-15.113.188h9.563v2.166H9.506v9.646H6.789v-9.646H3.375z" fill="#ffffff" fill-opacity="0.95"/></g>
+<text x="0" y="31.83" text-anchor="middle" font-size="12.2" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.93" stroke-linejoin="round" stroke-linecap="round">
 TypeScript
 </text>
-</g></g></g>
 </g></a>
 <a href="https://github.com/Shadow-Monarch-33?tab=repositories&amp;language=ruby" target="_blank" rel="noopener">
-<g class="planet-motion" transform="translate(348.41 435.36)">
-<animateMotion path="M 0 0 A 293.77 189.53 0 0 0 503.18 -195.72 A 293.77 189.53 0 0 0 0 0" dur="71.53s" begin="-37.37s" repeatCount="indefinite" fill="freeze"/>
+<g class="planet-motion" transform="translate(203.76 449.16)">
+<animateMotion path="M 0 0 A 462.68 216.25 0 0 0 792.48 -223.31 A 462.68 216.25 0 0 0 0 0" dur="72.12s" begin="-37.68s" repeatCount="indefinite" fill="freeze"/>
 <title>
 Ruby
 </title>
-<circle r="10.4" fill="url(#ph2)"/>
-<circle r="4.52" fill="url(#pg2)" stroke="#945050" stroke-width="0.7" stroke-opacity="0.32"/>
-<ellipse cx="-1.22" cy="-1.49" rx="1.54" ry="0.9" fill="#ffffff" fill-opacity="0.22"/>
-<path d="M -4.16 0.99 A 4.52 4.52 0 0 0 4.16 0.9" fill="none" stroke="#1b0505" stroke-width="0.7" stroke-opacity="0.55"/>
+<circle r="13.68" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.07"/>
+<circle r="16.72" fill="url(#ph2)"/>
+<circle r="7.27" fill="url(#pg2)" stroke="#945050" stroke-width="0.7" stroke-opacity="0.32"/>
+<ellipse cx="-1.96" cy="-2.4" rx="2.47" ry="1.45" fill="#ffffff" fill-opacity="0.22"/>
+<path d="M -6.69 1.6 A 7.27 7.27 0 0 0 6.69 1.45" fill="none" stroke="#1b0505" stroke-width="0.7" stroke-opacity="0.55"/>
+<g class="planet-logo" transform="translate(-4.18 -4.18) scale(0.3484)"><path d="M20.156.083c3.033.525 3.893 2.598 3.829 4.77L24 4.822 22.635 22.71 4.89 23.926h.016C3.433 23.864.15 23.729 0 19.139l1.645-3 2.819 6.586.503 1.172 2.805-9.144-.03.007.016-.03 9.255 2.956-1.396-5.431-.99-3.9 8.82-.569-.615-.51L16.5 2.114 20.159.073l-.003.01zM0 19.089zM5.13 5.073c3.561-3.533 8.157-5.621 9.922-3.84 1.762 1.777-.105 6.105-3.673 9.636-3.563 3.532-8.103 5.734-9.864 3.957-1.766-1.777.045-6.217 3.612-9.75l.003-.003z" fill="#ffffff" fill-opacity="0.95"/></g>
 <a href="https://github.com/Shadow-Monarch-33/Slack-Bot" target="_blank" rel="noopener">
-<g class="moon-motion" transform="translate(-5.67 12.26)">
-<animateMotion path="M 0 0 A 13.51 13.51 0 0 1 11.34 -24.53 A 13.51 13.51 0 0 1 0 0" dur="18.92s" begin="-10.75s" repeatCount="indefinite" fill="freeze"/>
+<g class="moon-motion" transform="translate(-5.74 12.41)">
+<animateMotion path="M 0 0 A 13.68 13.68 0 0 1 11.48 -24.82 A 13.68 13.68 0 0 1 0 0" dur="18.92s" begin="-10.75s" repeatCount="indefinite" fill="freeze"/>
 <title>
 Slack-Bot
 </title>
-<circle r="1.78" fill="#b58586" fill-opacity="0.13"/>
-<circle r="0.66" fill="#b58586"/>
-<circle cx="-0.18" cy="-0.2" r="0.22" fill="#ffffff" fill-opacity="0.55"/>
-<g>
-<animateTransform attributeName="transform" type="rotate" from="114.82" to="474.82" dur="18.92s" begin="-10.75s" repeatCount="indefinite"/>
-<g transform="translate(39.51 0)">
-<g>
-<animateTransform attributeName="transform" type="rotate" from="-114.82" to="-474.82" dur="18.92s" begin="-10.75s" repeatCount="indefinite"/>
-<text x="0" y="3" text-anchor="middle" font-size="8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="1.92" stroke-linejoin="round" stroke-linecap="round">
-Slack-Bot
-</text>
-</g></g></g>
+<circle r="2.24" fill="#cdadad" fill-opacity="0.22"/>
+<circle r="1.02" fill="#cdadad"/>
+<circle cx="-0.29" cy="-0.31" r="0.35" fill="#ffffff" fill-opacity="0.75"/>
 </g></a>
-<g>
-<animateTransform attributeName="transform" type="rotate" from="148.91" to="-211.09" dur="71.53s" begin="-37.37s" repeatCount="indefinite"/>
-<g transform="translate(55.51 0)">
-<g>
-<animateTransform attributeName="transform" type="rotate" from="-148.91" to="211.09" dur="71.53s" begin="-37.37s" repeatCount="indefinite"/>
-<text x="0" y="3" text-anchor="middle" font-size="12.2" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.93" stroke-linejoin="round" stroke-linecap="round">
+<text x="0" y="16.81" text-anchor="middle" font-size="8.91" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.14" stroke-linejoin="round" stroke-linecap="round">
 Ruby
 </text>
-</g></g></g>
 </g></a>
-<a href="https://github.com/Shadow-Monarch-33/github-solar-system/commit/c6211f12e574f76f2b4a887ed26c38b9a2d208f8" target="_blank" rel="noopener">
-<g class="comet" transform="translate(143.16 2)" opacity="0">
+<a href="https://github.com/Shadow-Monarch-33/github-solar-system/commit/1310d6da3b942b07128da506edb05fb16fe9ddc6" target="_blank" rel="noopener">
+<g class="comet" transform="translate(-179.85 177.86)" opacity="0">
 <title>
 github-solar-system
 </title>
-<animateTransform attributeName="transform" type="translate" dur="41s" begin="0s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0;0.2;1" values="143.16 2;143.16 2;1297.62 770.68;1297.62 770.68"/>
-<animate attributeName="opacity" dur="41s" begin="0s" repeatCount="indefinite" keyTimes="0;0;0.04;0.16;0.2;1" values="0;0;1;1;0;0"/>
-<circle cx="-36.62" cy="-24.39" r="1.3" fill="#ffffff" fill-opacity="0.05"/>
-<circle cx="-27.47" cy="-18.29" r="1.7" fill="#ffffff" fill-opacity="0.08"/>
-<circle cx="-18.31" cy="-12.19" r="2.1" fill="#ffffff" fill-opacity="0.13"/>
-<circle cx="-9.99" cy="-6.65" r="2.5" fill="#ffffff" fill-opacity="0.20"/>
-<circle cx="-4.16" cy="-2.77" r="2.9" fill="#ffffff" fill-opacity="0.30"/>
-<circle r="9" fill="url(#cometGlow)"/>
-<circle r="3.2" fill="#ffffff" fill-opacity="0.85"/>
-<circle r="1.8" fill="#ffffff"/>
-<text x="13" y="4" text-anchor="start" font-size="9.8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.35" stroke-linejoin="round" stroke-linecap="round">
+<animateTransform attributeName="transform" type="translate" dur="23.1s" begin="0s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0;0.32;1" values="-179.85 177.86;-179.85 177.86;1298.84 744.33;1298.84 744.33"/>
+<animate attributeName="opacity" dur="23.1s" begin="0s" repeatCount="indefinite" keyTimes="0;0;0.04;0.29;0.32;1" values="0;0;1;1;0;0"/>
+<circle cx="-108.32" cy="-41.5" r="1.2" fill="#ffffff" fill-opacity="0.03"/>
+<circle cx="-93.38" cy="-35.77" r="1.5" fill="#ffffff" fill-opacity="0.05"/>
+<circle cx="-80.31" cy="-30.77" r="1.9" fill="#ffffff" fill-opacity="0.08"/>
+<circle cx="-67.24" cy="-25.76" r="2.3" fill="#ffffff" fill-opacity="0.12"/>
+<circle cx="-55.1" cy="-21.11" r="2.8" fill="#ffffff" fill-opacity="0.17"/>
+<circle cx="-43.89" cy="-16.81" r="3.3" fill="#ffffff" fill-opacity="0.23"/>
+<circle cx="-33.62" cy="-12.88" r="3.8" fill="#ffffff" fill-opacity="0.30"/>
+<circle cx="-24.28" cy="-9.3" r="4.3" fill="#ffffff" fill-opacity="0.39"/>
+<circle cx="-15.87" cy="-6.08" r="4.7" fill="#ffffff" fill-opacity="0.49"/>
+<circle cx="-9.34" cy="-3.58" r="5" fill="#ffffff" fill-opacity="0.60"/>
+<circle cx="-3.74" cy="-1.43" r="5.2" fill="#ffffff" fill-opacity="0.74"/>
+<circle r="16" fill="url(#cometGlow)"/>
+<circle r="5.0" fill="#ffffff" fill-opacity="0.92"/>
+<circle r="2.8" fill="#ffffff"/>
+<text x="15" y="4" text-anchor="start" font-size="9.8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.35" stroke-linejoin="round" stroke-linecap="round">
 github-solar-system
 </text>
 </g></a>
 <a href="https://github.com/Shadow-Monarch-33/PlateCost/commit/48752edb7b08e6c7e3f1f78203aedce9f4cddb4d" target="_blank" rel="noopener">
-<g class="comet" transform="translate(109.93 -20.24)" opacity="0">
+<g class="comet" transform="translate(-175.24 104.13)" opacity="0">
 <title>
 PlateCost
 </title>
-<animateTransform attributeName="transform" type="translate" dur="41s" begin="0s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.13;0.33;1" values="109.93 -20.24;109.93 -20.24;1319.8 783.65;1319.8 783.65"/>
-<animate attributeName="opacity" dur="41s" begin="0s" repeatCount="indefinite" keyTimes="0;0.13;0.17;0.29;0.33;1" values="0;0;1;1;0;0"/>
-<circle cx="-36.65" cy="-24.35" r="1.3" fill="#ffffff" fill-opacity="0.05"/>
-<circle cx="-27.49" cy="-18.26" r="1.7" fill="#ffffff" fill-opacity="0.08"/>
-<circle cx="-18.32" cy="-12.18" r="2.1" fill="#ffffff" fill-opacity="0.13"/>
-<circle cx="-9.99" cy="-6.64" r="2.5" fill="#ffffff" fill-opacity="0.20"/>
-<circle cx="-4.16" cy="-2.77" r="2.9" fill="#ffffff" fill-opacity="0.30"/>
-<circle r="9" fill="url(#cometGlow)"/>
-<circle r="3.2" fill="#ffffff" fill-opacity="0.85"/>
-<circle r="1.8" fill="#ffffff"/>
-<text x="13" y="4" text-anchor="start" font-size="9.8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.35" stroke-linejoin="round" stroke-linecap="round">
+<animateTransform attributeName="transform" type="translate" dur="23.1s" begin="0s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.17;0.49;1" values="-175.24 104.13;-175.24 104.13;1336.27 664.63;1336.27 664.63"/>
+<animate attributeName="opacity" dur="23.1s" begin="0s" repeatCount="indefinite" keyTimes="0;0.17;0.2;0.46;0.49;1" values="0;0;1;1;0;0"/>
+<circle cx="-108.76" cy="-40.33" r="1.2" fill="#ffffff" fill-opacity="0.03"/>
+<circle cx="-93.76" cy="-34.77" r="1.5" fill="#ffffff" fill-opacity="0.05"/>
+<circle cx="-80.63" cy="-29.9" r="1.9" fill="#ffffff" fill-opacity="0.08"/>
+<circle cx="-67.51" cy="-25.03" r="2.3" fill="#ffffff" fill-opacity="0.12"/>
+<circle cx="-55.32" cy="-20.51" r="2.8" fill="#ffffff" fill-opacity="0.17"/>
+<circle cx="-44.07" cy="-16.34" r="3.3" fill="#ffffff" fill-opacity="0.23"/>
+<circle cx="-33.75" cy="-12.52" r="3.8" fill="#ffffff" fill-opacity="0.30"/>
+<circle cx="-24.38" cy="-9.04" r="4.3" fill="#ffffff" fill-opacity="0.39"/>
+<circle cx="-15.94" cy="-5.91" r="4.7" fill="#ffffff" fill-opacity="0.49"/>
+<circle cx="-9.38" cy="-3.48" r="5" fill="#ffffff" fill-opacity="0.60"/>
+<circle cx="-3.75" cy="-1.39" r="5.2" fill="#ffffff" fill-opacity="0.74"/>
+<circle r="16" fill="url(#cometGlow)"/>
+<circle r="5.0" fill="#ffffff" fill-opacity="0.92"/>
+<circle r="2.8" fill="#ffffff"/>
+<text x="15" y="4" text-anchor="start" font-size="9.8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.35" stroke-linejoin="round" stroke-linecap="round">
 PlateCost
 </text>
 </g></a>
 <a href="https://github.com/Shadow-Monarch-33/Shadow-Monarch-33/commit/08c3a4446dde8150c151392253645a5f0961f738" target="_blank" rel="noopener">
-<g class="comet" transform="translate(-206.63 -73.62)" opacity="0">
+<g class="comet" transform="translate(-190.3 79.15)" opacity="0">
 <title>
 Shadow-Monarch-33
 </title>
-<animateTransform attributeName="transform" type="translate" dur="41s" begin="0s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.27;0.46;1" values="-206.63 -73.62;-206.63 -73.62;1305.01 792.68;1305.01 792.68"/>
-<animate attributeName="opacity" dur="41s" begin="0s" repeatCount="indefinite" keyTimes="0;0.27;0.3;0.43;0.46;1" values="0;0;1;1;0;0"/>
-<circle cx="-38.18" cy="-21.88" r="1.3" fill="#ffffff" fill-opacity="0.05"/>
-<circle cx="-28.63" cy="-16.41" r="1.7" fill="#ffffff" fill-opacity="0.08"/>
-<circle cx="-19.09" cy="-10.94" r="2.1" fill="#ffffff" fill-opacity="0.13"/>
-<circle cx="-10.41" cy="-5.97" r="2.5" fill="#ffffff" fill-opacity="0.20"/>
-<circle cx="-4.34" cy="-2.49" r="2.9" fill="#ffffff" fill-opacity="0.30"/>
-<circle r="9" fill="url(#cometGlow)"/>
-<circle r="3.2" fill="#ffffff" fill-opacity="0.85"/>
-<circle r="1.8" fill="#ffffff"/>
-<text x="13" y="4" text-anchor="start" font-size="9.8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.35" stroke-linejoin="round" stroke-linecap="round">
+<animateTransform attributeName="transform" type="translate" dur="23.1s" begin="0s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.33;0.66;1" values="-190.3 79.15;-190.3 79.15;1346.31 523.39;1346.31 523.39"/>
+<animate attributeName="opacity" dur="23.1s" begin="0s" repeatCount="indefinite" keyTimes="0;0.33;0.37;0.62;0.66;1" values="0;0;1;1;0;0"/>
+<circle cx="-111.44" cy="-32.22" r="1.2" fill="#ffffff" fill-opacity="0.03"/>
+<circle cx="-96.07" cy="-27.77" r="1.5" fill="#ffffff" fill-opacity="0.05"/>
+<circle cx="-82.62" cy="-23.88" r="1.9" fill="#ffffff" fill-opacity="0.08"/>
+<circle cx="-69.17" cy="-20" r="2.3" fill="#ffffff" fill-opacity="0.12"/>
+<circle cx="-56.68" cy="-16.39" r="2.8" fill="#ffffff" fill-opacity="0.17"/>
+<circle cx="-45.15" cy="-13.05" r="3.3" fill="#ffffff" fill-opacity="0.23"/>
+<circle cx="-34.58" cy="-10" r="3.8" fill="#ffffff" fill-opacity="0.30"/>
+<circle cx="-24.98" cy="-7.22" r="4.3" fill="#ffffff" fill-opacity="0.39"/>
+<circle cx="-16.33" cy="-4.72" r="4.7" fill="#ffffff" fill-opacity="0.49"/>
+<circle cx="-9.61" cy="-2.78" r="5" fill="#ffffff" fill-opacity="0.60"/>
+<circle cx="-3.84" cy="-1.11" r="5.2" fill="#ffffff" fill-opacity="0.74"/>
+<circle r="16" fill="url(#cometGlow)"/>
+<circle r="5.0" fill="#ffffff" fill-opacity="0.92"/>
+<circle r="2.8" fill="#ffffff"/>
+<text x="15" y="4" text-anchor="start" font-size="9.8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.35" stroke-linejoin="round" stroke-linecap="round">
 Shadow-Monarch-33
 </text>
 </g></a>
 <a href="https://github.com/Shadow-Monarch-33/Casefile-042/commit/dc9774baac6b00cf8c570cfb8569f96e9b9685e1" target="_blank" rel="noopener">
-<g class="comet" transform="translate(181.68 -31.3)" opacity="0">
+<g class="comet" transform="translate(-178.36 224.52)" opacity="0">
 <title>
 Casefile-042
 </title>
-<animateTransform attributeName="transform" type="translate" dur="41s" begin="0s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4;0.6;1" values="181.68 -31.3;181.68 -31.3;1391.07 731.54;1391.07 731.54"/>
-<animate attributeName="opacity" dur="41s" begin="0s" repeatCount="indefinite" keyTimes="0;0.4;0.44;0.56;0.6;1" values="0;0;1;1;0;0"/>
-<circle cx="-37.22" cy="-23.47" r="1.3" fill="#ffffff" fill-opacity="0.05"/>
-<circle cx="-27.91" cy="-17.61" r="1.7" fill="#ffffff" fill-opacity="0.08"/>
-<circle cx="-18.61" cy="-11.74" r="2.1" fill="#ffffff" fill-opacity="0.13"/>
-<circle cx="-10.15" cy="-6.4" r="2.5" fill="#ffffff" fill-opacity="0.20"/>
-<circle cx="-4.23" cy="-2.67" r="2.9" fill="#ffffff" fill-opacity="0.30"/>
-<circle r="9" fill="url(#cometGlow)"/>
-<circle r="3.2" fill="#ffffff" fill-opacity="0.85"/>
-<circle r="1.8" fill="#ffffff"/>
-<text x="13" y="4" text-anchor="start" font-size="9.8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.35" stroke-linejoin="round" stroke-linecap="round">
+<animateTransform attributeName="transform" type="translate" dur="23.1s" begin="0s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5;0.82;1" values="-178.36 224.52;-178.36 224.52;1278.38 792.55;1278.38 792.55"/>
+<animate attributeName="opacity" dur="23.1s" begin="0s" repeatCount="indefinite" keyTimes="0;0.5;0.54;0.79;0.82;1" values="0;0;1;1;0;0"/>
+<circle cx="-108.07" cy="-42.14" r="1.2" fill="#ffffff" fill-opacity="0.03"/>
+<circle cx="-93.17" cy="-36.33" r="1.5" fill="#ffffff" fill-opacity="0.05"/>
+<circle cx="-80.12" cy="-31.24" r="1.9" fill="#ffffff" fill-opacity="0.08"/>
+<circle cx="-67.08" cy="-26.16" r="2.3" fill="#ffffff" fill-opacity="0.12"/>
+<circle cx="-54.97" cy="-21.43" r="2.8" fill="#ffffff" fill-opacity="0.17"/>
+<circle cx="-43.79" cy="-17.07" r="3.3" fill="#ffffff" fill-opacity="0.23"/>
+<circle cx="-33.54" cy="-13.08" r="3.8" fill="#ffffff" fill-opacity="0.30"/>
+<circle cx="-24.22" cy="-9.45" r="4.3" fill="#ffffff" fill-opacity="0.39"/>
+<circle cx="-15.84" cy="-6.18" r="4.7" fill="#ffffff" fill-opacity="0.49"/>
+<circle cx="-9.32" cy="-3.63" r="5" fill="#ffffff" fill-opacity="0.60"/>
+<circle cx="-3.73" cy="-1.45" r="5.2" fill="#ffffff" fill-opacity="0.74"/>
+<circle r="16" fill="url(#cometGlow)"/>
+<circle r="5.0" fill="#ffffff" fill-opacity="0.92"/>
+<circle r="2.8" fill="#ffffff"/>
+<text x="15" y="4" text-anchor="start" font-size="9.8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.35" stroke-linejoin="round" stroke-linecap="round">
 Casefile-042
 </text>
 </g></a>
-<a href="https://github.com/Shadow-Monarch-33/Casefile-042/commit/dd7c577a385163a5c039578cbb0eb2c54ad3bcdc" target="_blank" rel="noopener">
-<g class="comet" transform="translate(286.22 -17.25)" opacity="0">
+<a href="https://github.com/Shadow-Monarch-33/Slack-Bot/commit/712690db797d5abcbe1329951b7e47b21e50e287" target="_blank" rel="noopener">
+<g class="comet" transform="translate(-173.13 142.32)" opacity="0">
 <title>
-Casefile-042
+Slack-Bot
 </title>
-<animateTransform attributeName="transform" type="translate" dur="41s" begin="0s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.54;0.73;1" values="286.22 -17.25;286.22 -17.25;1378.56 797.75;1378.56 797.75"/>
-<animate attributeName="opacity" dur="41s" begin="0s" repeatCount="indefinite" keyTimes="0;0.54;0.57;0.7;0.73;1" values="0;0;1;1;0;0"/>
-<circle cx="-35.27" cy="-26.31" r="1.3" fill="#ffffff" fill-opacity="0.05"/>
-<circle cx="-26.45" cy="-19.73" r="1.7" fill="#ffffff" fill-opacity="0.08"/>
-<circle cx="-17.63" cy="-13.16" r="2.1" fill="#ffffff" fill-opacity="0.13"/>
-<circle cx="-9.62" cy="-7.18" r="2.5" fill="#ffffff" fill-opacity="0.20"/>
-<circle cx="-4.01" cy="-2.99" r="2.9" fill="#ffffff" fill-opacity="0.30"/>
-<circle r="9" fill="url(#cometGlow)"/>
-<circle r="3.2" fill="#ffffff" fill-opacity="0.85"/>
-<circle r="1.8" fill="#ffffff"/>
-<text x="13" y="4" text-anchor="start" font-size="9.8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.35" stroke-linejoin="round" stroke-linecap="round">
-Casefile-042
-</text>
-</g></a>
-<a href="https://github.com/Shadow-Monarch-33/Casefile-042/commit/bc9d736495582e919be121deb4ddb659ae2fb412" target="_blank" rel="noopener">
-<g class="comet" transform="translate(194.51 -101.79)" opacity="0">
-<title>
-Casefile-042
-</title>
-<animateTransform attributeName="transform" type="translate" dur="41s" begin="0s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.67;0.87;1" values="194.51 -101.79;194.51 -101.79;1296.11 755.71;1296.11 755.71"/>
-<animate attributeName="opacity" dur="41s" begin="0s" repeatCount="indefinite" keyTimes="0;0.67;0.71;0.83;0.87;1" values="0;0;1;1;0;0"/>
-<circle cx="-34.72" cy="-27.03" r="1.3" fill="#ffffff" fill-opacity="0.05"/>
-<circle cx="-26.04" cy="-20.27" r="1.7" fill="#ffffff" fill-opacity="0.08"/>
-<circle cx="-17.36" cy="-13.51" r="2.1" fill="#ffffff" fill-opacity="0.13"/>
-<circle cx="-9.47" cy="-7.37" r="2.5" fill="#ffffff" fill-opacity="0.20"/>
-<circle cx="-3.95" cy="-3.07" r="2.9" fill="#ffffff" fill-opacity="0.30"/>
-<circle r="9" fill="url(#cometGlow)"/>
-<circle r="3.2" fill="#ffffff" fill-opacity="0.85"/>
-<circle r="1.8" fill="#ffffff"/>
-<text x="13" y="4" text-anchor="start" font-size="9.8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.35" stroke-linejoin="round" stroke-linecap="round">
-Casefile-042
+<animateTransform attributeName="transform" type="translate" dur="23.1s" begin="0s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.67;0.99;1" values="-173.13 142.32;-173.13 142.32;1278.41 583.54;1278.41 583.54"/>
+<animate attributeName="opacity" dur="23.1s" begin="0s" repeatCount="indefinite" keyTimes="0;0.67;0.7;0.96;0.99;1" values="0;0;1;1;0;0"/>
+<circle cx="-110.99" cy="-33.74" r="1.2" fill="#ffffff" fill-opacity="0.03"/>
+<circle cx="-95.68" cy="-29.08" r="1.5" fill="#ffffff" fill-opacity="0.05"/>
+<circle cx="-82.28" cy="-25.01" r="1.9" fill="#ffffff" fill-opacity="0.08"/>
+<circle cx="-68.89" cy="-20.94" r="2.3" fill="#ffffff" fill-opacity="0.12"/>
+<circle cx="-56.45" cy="-17.16" r="2.8" fill="#ffffff" fill-opacity="0.17"/>
+<circle cx="-44.97" cy="-13.67" r="3.3" fill="#ffffff" fill-opacity="0.23"/>
+<circle cx="-34.44" cy="-10.47" r="3.8" fill="#ffffff" fill-opacity="0.30"/>
+<circle cx="-24.88" cy="-7.56" r="4.3" fill="#ffffff" fill-opacity="0.39"/>
+<circle cx="-16.27" cy="-4.94" r="4.7" fill="#ffffff" fill-opacity="0.49"/>
+<circle cx="-9.57" cy="-2.91" r="5" fill="#ffffff" fill-opacity="0.60"/>
+<circle cx="-3.83" cy="-1.16" r="5.2" fill="#ffffff" fill-opacity="0.74"/>
+<circle r="16" fill="url(#cometGlow)"/>
+<circle r="5.0" fill="#ffffff" fill-opacity="0.92"/>
+<circle r="2.8" fill="#ffffff"/>
+<text x="15" y="4" text-anchor="start" font-size="9.8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.35" stroke-linejoin="round" stroke-linecap="round">
+Slack-Bot
 </text>
 </g></a>
 </g>
 <g class="static-fallback" display="none">
 <a href="https://github.com/Shadow-Monarch-33?tab=repositories&amp;language=python" target="_blank" rel="noopener">
-<g class="planet-static" transform="translate(575.71 259.07)">
+<g class="planet-static" transform="translate(564.92 255.44)">
 <title>
 Python
 </title>
+<circle r="27.26" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.07"/>
 <a href="https://github.com/Shadow-Monarch-33/Axiom-Generative-LLM-Client" target="_blank" rel="noopener">
-<g class="moon-static" transform="translate(-19.72 -9.13)">
+<g class="moon-static" transform="translate(-24.74 -11.46)">
 <title>
 Axiom-Generative-LLM-Client
 </title>
-<circle r="1.78" fill="#96b6d0" fill-opacity="0.13"/>
-<circle r="0.66" fill="#96b6d0"/>
-<circle cx="-0.18" cy="-0.2" r="0.22" fill="#ffffff" fill-opacity="0.55"/>
-<text x="-78.85" y="-33.52" text-anchor="middle" font-size="8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="1.92" stroke-linejoin="round" stroke-linecap="round">
-Axiom-Generative-LLM-Client
-</text>
+<circle r="2.24" fill="#b8cee0" fill-opacity="0.22"/>
+<circle r="1.02" fill="#b8cee0"/>
+<circle cx="-0.29" cy="-0.31" r="0.35" fill="#ffffff" fill-opacity="0.75"/>
 </g></a>
 <a href="https://github.com/Shadow-Monarch-33/Casefile-042" target="_blank" rel="noopener">
-<g class="moon-static" transform="translate(9.33 -19.63)">
+<g class="moon-static" transform="translate(11.71 -24.62)">
 <title>
 Casefile-042
 </title>
-<circle r="1.78" fill="#96b6d0" fill-opacity="0.13"/>
-<circle r="0.66" fill="#96b6d0"/>
-<circle cx="-0.18" cy="-0.2" r="0.22" fill="#ffffff" fill-opacity="0.55"/>
-<text x="20.5" y="-40.11" text-anchor="middle" font-size="8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="1.92" stroke-linejoin="round" stroke-linecap="round">
-Casefile-042
-</text>
+<circle r="2.24" fill="#b8cee0" fill-opacity="0.22"/>
+<circle r="1.02" fill="#b8cee0"/>
+<circle cx="-0.29" cy="-0.31" r="0.35" fill="#ffffff" fill-opacity="0.75"/>
 </g></a>
-<circle r="29.3" fill="url(#ph0)"/>
-<circle r="12.74" fill="url(#pg0)" stroke="#6895bc" stroke-width="0.7" stroke-opacity="0.32"/>
-<ellipse cx="-3.44" cy="-4.2" rx="4.33" ry="2.55" fill="#ffffff" fill-opacity="0.22"/>
-<path d="M -11.72 2.8 A 12.74 12.74 0 0 0 11.72 2.55" fill="none" stroke="#0d1b28" stroke-width="0.7" stroke-opacity="0.55"/>
+<circle r="47.98" fill="url(#ph0)"/>
+<circle r="20.86" fill="url(#pg0)" stroke="#6895bc" stroke-width="0.7" stroke-opacity="0.32"/>
+<ellipse cx="-5.63" cy="-6.88" rx="7.09" ry="4.17" fill="#ffffff" fill-opacity="0.22"/>
+<path d="M -19.19 4.59 A 20.86 20.86 0 0 0 19.19 4.17" fill="none" stroke="#0d1b28" stroke-width="0.7" stroke-opacity="0.55"/>
+<g class="planet-logo" transform="translate(-11.99 -11.99) scale(0.9995)"><path d="M11.858 0c-.978.005-1.913.088-2.736.234C6.7.662 6.26 1.558 6.26 3.21v2.182h5.725v.727H4.111c-1.664 0-3.121 1-3.577 2.903-.526 2.181-.549 3.542 0 5.82.407 1.694 1.379 2.902 3.043 2.902h1.969v-2.616c0-1.89 1.635-3.557 3.576-3.557h5.72c1.591 0 2.862-1.31 2.862-2.91v-5.45c0-1.553-1.309-2.718-2.863-2.977A18 18 0 0 0 11.858 0M8.762 1.755c.591 0 1.074.491 1.074 1.095 0 .601-.483 1.087-1.074 1.087A1.08 1.08 0 0 1 7.688 2.85c0-.604.48-1.095 1.074-1.095m9.656 4.364v2.543c0 1.971-1.671 3.63-3.577 3.63H9.122c-1.566 0-2.862 1.34-2.862 2.91v5.452c0 1.551 1.349 2.464 2.862 2.91 1.813.532 3.55.628 5.72 0 1.44-.418 2.862-1.258 2.862-2.91V18.47h-5.719v-.727h8.582c1.664 0 2.284-1.16 2.862-2.903.598-1.793.573-3.518 0-5.819-.41-1.656-1.196-2.903-2.862-2.903zm-3.216 13.807a1.08 1.08 0 0 1 1.074 1.088c0 .604-.48 1.094-1.074 1.094-.592 0-1.075-.49-1.075-1.094 0-.601.483-1.088 1.075-1.088" fill="#ffffff" fill-opacity="0.95"/></g>
 <a href="https://github.com/Shadow-Monarch-33/github-solar-system" target="_blank" rel="noopener">
-<g class="moon-static" transform="translate(19.78 9.01)">
+<g class="moon-static" transform="translate(24.81 11.3)">
 <title>
 github-solar-system
 </title>
-<circle r="1.78" fill="#96b6d0" fill-opacity="0.13"/>
-<circle r="0.66" fill="#96b6d0"/>
-<circle cx="-0.18" cy="-0.2" r="0.22" fill="#ffffff" fill-opacity="0.55"/>
-<text x="59.43" y="30.07" text-anchor="middle" font-size="8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="1.92" stroke-linejoin="round" stroke-linecap="round">
-github-solar-system
-</text>
+<circle r="2.24" fill="#b8cee0" fill-opacity="0.22"/>
+<circle r="1.02" fill="#b8cee0"/>
+<circle cx="-0.29" cy="-0.31" r="0.35" fill="#ffffff" fill-opacity="0.75"/>
 </g></a>
 <a href="https://github.com/Shadow-Monarch-33/Web-Scraper" target="_blank" rel="noopener">
-<g class="moon-static" transform="translate(-10.88 18.81)">
+<g class="moon-static" transform="translate(-13.65 23.6)">
 <title>
 Web-Scraper
 </title>
-<circle r="1.78" fill="#96b6d0" fill-opacity="0.13"/>
-<circle r="0.66" fill="#96b6d0"/>
-<circle cx="-0.18" cy="-0.2" r="0.22" fill="#ffffff" fill-opacity="0.55"/>
-<text x="-23.9" y="44.31" text-anchor="middle" font-size="8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="1.92" stroke-linejoin="round" stroke-linecap="round">
-Web-Scraper
-</text>
+<circle r="2.24" fill="#b8cee0" fill-opacity="0.22"/>
+<circle r="1.02" fill="#b8cee0"/>
+<circle cx="-0.29" cy="-0.31" r="0.35" fill="#ffffff" fill-opacity="0.75"/>
 </g></a>
-<text x="-20.16" y="-97.91" text-anchor="middle" font-size="12.2" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.93" stroke-linejoin="round" stroke-linecap="round">
+<text x="0" y="35.16" text-anchor="middle" font-size="12.2" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.93" stroke-linejoin="round" stroke-linecap="round">
 Python
 </text>
 </g></a>
 <a href="https://github.com/Shadow-Monarch-33?tab=repositories&amp;language=typescript" target="_blank" rel="noopener">
-<g class="planet-static" transform="translate(789.8 402.99)">
+<g class="planet-static" transform="translate(895.76 411.43)">
 <title>
 TypeScript
 </title>
+<circle r="24.79" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.07"/>
 <a href="https://github.com/Shadow-Monarch-33/PlateCost" target="_blank" rel="noopener">
-<g class="moon-static" transform="translate(-19.71 -6.24)">
+<g class="moon-static" transform="translate(-23.64 -7.48)">
 <title>
 PlateCost
 </title>
-<circle r="1.78" fill="#94b9e1" fill-opacity="0.13"/>
-<circle r="0.66" fill="#94b9e1"/>
-<circle cx="-0.18" cy="-0.2" r="0.22" fill="#ffffff" fill-opacity="0.55"/>
-<text x="-44.49" y="-11.09" text-anchor="middle" font-size="8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="1.92" stroke-linejoin="round" stroke-linecap="round">
-PlateCost
-</text>
+<circle r="2.24" fill="#b7d0eb" fill-opacity="0.22"/>
+<circle r="1.02" fill="#b7d0eb"/>
+<circle cx="-0.29" cy="-0.31" r="0.35" fill="#ffffff" fill-opacity="0.75"/>
 </g></a>
-<circle r="26.86" fill="url(#ph1)"/>
-<circle r="11.68" fill="url(#pg1)" stroke="#649ad4" stroke-width="0.7" stroke-opacity="0.32"/>
-<ellipse cx="-3.15" cy="-3.85" rx="3.97" ry="2.34" fill="#ffffff" fill-opacity="0.22"/>
-<path d="M -10.75 2.57 A 11.68 11.68 0 0 0 10.75 2.34" fill="none" stroke="#0c1d30" stroke-width="0.7" stroke-opacity="0.55"/>
-<text x="55.26" y="32.56" text-anchor="middle" font-size="12.2" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.93" stroke-linejoin="round" stroke-linecap="round">
+<circle r="42.3" fill="url(#ph1)"/>
+<circle r="18.39" fill="url(#pg1)" stroke="#649ad4" stroke-width="0.7" stroke-opacity="0.32"/>
+<ellipse cx="-4.97" cy="-6.07" rx="6.25" ry="3.68" fill="#ffffff" fill-opacity="0.22"/>
+<path d="M -16.92 4.05 A 18.39 18.39 0 0 0 16.92 3.68" fill="none" stroke="#0c1d30" stroke-width="0.7" stroke-opacity="0.55"/>
+<g class="planet-logo" transform="translate(-10.57 -10.57) scale(0.8812)"><path d="M1.125 0C.502 0 0 .502 0 1.125v21.75C0 23.498.502 24 1.125 24h21.75c.623 0 1.125-.502 1.125-1.125V1.125C24 .502 23.498 0 22.875 0zm17.363 9.75c.612 0 1.154.037 1.627.111a6.38 6.38 0 0 1 1.306.34v2.458a3.95 3.95 0 0 0-.643-.361 5.093 5.093 0 0 0-.717-.26 5.453 5.453 0 0 0-1.426-.2c-.3 0-.573.028-.819.086a2.1 2.1 0 0 0-.623.242c-.17.104-.3.229-.393.374a.888.888 0 0 0-.14.49c0 .196.053.373.156.529.104.156.252.304.443.444s.423.276.696.41c.273.135.582.274.926.416.47.197.892.407 1.266.628.374.222.695.473.963.753.268.279.472.598.614.957.142.359.214.776.214 1.253 0 .657-.125 1.21-.373 1.656a3.033 3.033 0 0 1-1.012 1.085 4.38 4.38 0 0 1-1.487.596c-.566.12-1.163.18-1.79.18a9.916 9.916 0 0 1-1.84-.164 5.544 5.544 0 0 1-1.512-.493v-2.63a5.033 5.033 0 0 0 3.237 1.2c.333 0 .624-.03.872-.09.249-.06.456-.144.623-.25.166-.108.29-.234.373-.38a1.023 1.023 0 0 0-.074-1.089 2.12 2.12 0 0 0-.537-.5 5.597 5.597 0 0 0-.807-.444 27.72 27.72 0 0 0-1.007-.436c-.918-.383-1.602-.852-2.053-1.405-.45-.553-.676-1.222-.676-2.005 0-.614.123-1.141.369-1.582.246-.441.58-.804 1.004-1.089a4.494 4.494 0 0 1 1.47-.629 7.536 7.536 0 0 1 1.77-.201zm-15.113.188h9.563v2.166H9.506v9.646H6.789v-9.646H3.375z" fill="#ffffff" fill-opacity="0.95"/></g>
+<text x="0" y="31.83" text-anchor="middle" font-size="12.2" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.93" stroke-linejoin="round" stroke-linecap="round">
 TypeScript
 </text>
 </g></a>
 <a href="https://github.com/Shadow-Monarch-33?tab=repositories&amp;language=ruby" target="_blank" rel="noopener">
-<g class="planet-static" transform="translate(348.41 435.36)">
+<g class="planet-static" transform="translate(203.76 449.16)">
 <title>
 Ruby
 </title>
-<circle r="10.4" fill="url(#ph2)"/>
-<circle r="4.52" fill="url(#pg2)" stroke="#945050" stroke-width="0.7" stroke-opacity="0.32"/>
-<ellipse cx="-1.22" cy="-1.49" rx="1.54" ry="0.9" fill="#ffffff" fill-opacity="0.22"/>
-<path d="M -4.16 0.99 A 4.52 4.52 0 0 0 4.16 0.9" fill="none" stroke="#1b0505" stroke-width="0.7" stroke-opacity="0.55"/>
+<circle r="13.68" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.07"/>
+<circle r="16.72" fill="url(#ph2)"/>
+<circle r="7.27" fill="url(#pg2)" stroke="#945050" stroke-width="0.7" stroke-opacity="0.32"/>
+<ellipse cx="-1.96" cy="-2.4" rx="2.47" ry="1.45" fill="#ffffff" fill-opacity="0.22"/>
+<path d="M -6.69 1.6 A 7.27 7.27 0 0 0 6.69 1.45" fill="none" stroke="#1b0505" stroke-width="0.7" stroke-opacity="0.55"/>
+<g class="planet-logo" transform="translate(-4.18 -4.18) scale(0.3484)"><path d="M20.156.083c3.033.525 3.893 2.598 3.829 4.77L24 4.822 22.635 22.71 4.89 23.926h.016C3.433 23.864.15 23.729 0 19.139l1.645-3 2.819 6.586.503 1.172 2.805-9.144-.03.007.016-.03 9.255 2.956-1.396-5.431-.99-3.9 8.82-.569-.615-.51L16.5 2.114 20.159.073l-.003.01zM0 19.089zM5.13 5.073c3.561-3.533 8.157-5.621 9.922-3.84 1.762 1.777-.105 6.105-3.673 9.636-3.563 3.532-8.103 5.734-9.864 3.957-1.766-1.777.045-6.217 3.612-9.75l.003-.003z" fill="#ffffff" fill-opacity="0.95"/></g>
 <a href="https://github.com/Shadow-Monarch-33/Slack-Bot" target="_blank" rel="noopener">
-<g class="moon-static" transform="translate(-5.67 12.26)">
+<g class="moon-static" transform="translate(-5.74 12.41)">
 <title>
 Slack-Bot
 </title>
-<circle r="1.78" fill="#b58586" fill-opacity="0.13"/>
-<circle r="0.66" fill="#b58586"/>
-<circle cx="-0.18" cy="-0.2" r="0.22" fill="#ffffff" fill-opacity="0.55"/>
-<text x="-16.59" y="38.86" text-anchor="middle" font-size="8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="1.92" stroke-linejoin="round" stroke-linecap="round">
-Slack-Bot
-</text>
+<circle r="2.24" fill="#cdadad" fill-opacity="0.22"/>
+<circle r="1.02" fill="#cdadad"/>
+<circle cx="-0.29" cy="-0.31" r="0.35" fill="#ffffff" fill-opacity="0.75"/>
 </g></a>
-<text x="-47.54" y="31.66" text-anchor="middle" font-size="12.2" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.93" stroke-linejoin="round" stroke-linecap="round">
+<text x="0" y="16.81" text-anchor="middle" font-size="8.91" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.14" stroke-linejoin="round" stroke-linecap="round">
 Ruby
 </text>
 </g></a>
-<a href="https://github.com/Shadow-Monarch-33/github-solar-system/commit/c6211f12e574f76f2b4a887ed26c38b9a2d208f8" target="_blank" rel="noopener">
-<g class="comet-static" transform="translate(120 108)">
+<a href="https://github.com/Shadow-Monarch-33/github-solar-system/commit/1310d6da3b942b07128da506edb05fb16fe9ddc6" target="_blank" rel="noopener">
+<g class="comet-static" transform="translate(984 108)">
 <title>
 github-solar-system
 </title>
-<circle cx="-36.62" cy="-24.39" r="1.3" fill="#ffffff" fill-opacity="0.05"/>
-<circle cx="-27.47" cy="-18.29" r="1.7" fill="#ffffff" fill-opacity="0.08"/>
-<circle cx="-18.31" cy="-12.19" r="2.1" fill="#ffffff" fill-opacity="0.13"/>
-<circle cx="-9.99" cy="-6.65" r="2.5" fill="#ffffff" fill-opacity="0.20"/>
-<circle cx="-4.16" cy="-2.77" r="2.9" fill="#ffffff" fill-opacity="0.30"/>
-<circle r="9" fill="url(#cometGlow)"/>
-<circle r="3.2" fill="#ffffff" fill-opacity="0.85"/>
-<circle r="1.8" fill="#ffffff"/>
-<text x="13" y="4" text-anchor="start" font-size="9.8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.35" stroke-linejoin="round" stroke-linecap="round">
+<circle cx="-108.32" cy="-41.5" r="1.2" fill="#ffffff" fill-opacity="0.03"/>
+<circle cx="-93.38" cy="-35.77" r="1.5" fill="#ffffff" fill-opacity="0.05"/>
+<circle cx="-80.31" cy="-30.77" r="1.9" fill="#ffffff" fill-opacity="0.08"/>
+<circle cx="-67.24" cy="-25.76" r="2.3" fill="#ffffff" fill-opacity="0.12"/>
+<circle cx="-55.1" cy="-21.11" r="2.8" fill="#ffffff" fill-opacity="0.17"/>
+<circle cx="-43.89" cy="-16.81" r="3.3" fill="#ffffff" fill-opacity="0.23"/>
+<circle cx="-33.62" cy="-12.88" r="3.8" fill="#ffffff" fill-opacity="0.30"/>
+<circle cx="-24.28" cy="-9.3" r="4.3" fill="#ffffff" fill-opacity="0.39"/>
+<circle cx="-15.87" cy="-6.08" r="4.7" fill="#ffffff" fill-opacity="0.49"/>
+<circle cx="-9.34" cy="-3.58" r="5" fill="#ffffff" fill-opacity="0.60"/>
+<circle cx="-3.74" cy="-1.43" r="5.2" fill="#ffffff" fill-opacity="0.74"/>
+<circle r="16" fill="url(#cometGlow)"/>
+<circle r="5.0" fill="#ffffff" fill-opacity="0.92"/>
+<circle r="2.8" fill="#ffffff"/>
+<text x="15" y="4" text-anchor="start" font-size="9.8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.35" stroke-linejoin="round" stroke-linecap="round">
 github-solar-system
 </text>
 </g></a>
 <a href="https://github.com/Shadow-Monarch-33/PlateCost/commit/48752edb7b08e6c7e3f1f78203aedce9f4cddb4d" target="_blank" rel="noopener">
-<g class="comet-static" transform="translate(768 553.5)">
+<g class="comet-static" transform="translate(216 553.5)">
 <title>
 PlateCost
 </title>
-<circle cx="-36.65" cy="-24.35" r="1.3" fill="#ffffff" fill-opacity="0.05"/>
-<circle cx="-27.49" cy="-18.26" r="1.7" fill="#ffffff" fill-opacity="0.08"/>
-<circle cx="-18.32" cy="-12.18" r="2.1" fill="#ffffff" fill-opacity="0.13"/>
-<circle cx="-9.99" cy="-6.64" r="2.5" fill="#ffffff" fill-opacity="0.20"/>
-<circle cx="-4.16" cy="-2.77" r="2.9" fill="#ffffff" fill-opacity="0.30"/>
-<circle r="9" fill="url(#cometGlow)"/>
-<circle r="3.2" fill="#ffffff" fill-opacity="0.85"/>
-<circle r="1.8" fill="#ffffff"/>
-<text x="13" y="4" text-anchor="start" font-size="9.8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.35" stroke-linejoin="round" stroke-linecap="round">
+<circle cx="-108.76" cy="-40.33" r="1.2" fill="#ffffff" fill-opacity="0.03"/>
+<circle cx="-93.76" cy="-34.77" r="1.5" fill="#ffffff" fill-opacity="0.05"/>
+<circle cx="-80.63" cy="-29.9" r="1.9" fill="#ffffff" fill-opacity="0.08"/>
+<circle cx="-67.51" cy="-25.03" r="2.3" fill="#ffffff" fill-opacity="0.12"/>
+<circle cx="-55.32" cy="-20.51" r="2.8" fill="#ffffff" fill-opacity="0.17"/>
+<circle cx="-44.07" cy="-16.34" r="3.3" fill="#ffffff" fill-opacity="0.23"/>
+<circle cx="-33.75" cy="-12.52" r="3.8" fill="#ffffff" fill-opacity="0.30"/>
+<circle cx="-24.38" cy="-9.04" r="4.3" fill="#ffffff" fill-opacity="0.39"/>
+<circle cx="-15.94" cy="-5.91" r="4.7" fill="#ffffff" fill-opacity="0.49"/>
+<circle cx="-9.38" cy="-3.48" r="5" fill="#ffffff" fill-opacity="0.60"/>
+<circle cx="-3.75" cy="-1.39" r="5.2" fill="#ffffff" fill-opacity="0.74"/>
+<circle r="16" fill="url(#cometGlow)"/>
+<circle r="5.0" fill="#ffffff" fill-opacity="0.92"/>
+<circle r="2.8" fill="#ffffff"/>
+<text x="15" y="4" text-anchor="start" font-size="9.8" font-weight="600" letter-spacing="0.4" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="2.35" stroke-linejoin="round" stroke-linecap="round">
 PlateCost
 </text>
 </g></a>
