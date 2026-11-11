@@ -508,15 +508,27 @@ def _build_stars(width: int, height: int, density: str, seed: int) -> tuple[Star
     if base > 0:
         count = max(1, round(base * (width * height) / (DEFAULT_WIDTH * DEFAULT_HEIGHT)))
     rng = random.Random(seed)
-    return tuple(
-        Star(
-            x=round(rng.uniform(0, width), 2),
-            y=round(rng.uniform(0, height), 2),
-            radius=round(rng.uniform(0.28, 1.05), 2),
-            opacity=round(rng.uniform(0.14, 0.72), 2),
+    stars: list[Star] = []
+    for _ in range(count):
+        if rng.random() < 0.18:
+            radius = round(rng.uniform(1.30, 1.80), 2)
+        else:
+            radius = round(rng.uniform(0.80, 1.30), 2)
+
+        if rng.random() < 0.18:
+            opacity = round(rng.uniform(0.80, 0.95), 2)
+        else:
+            opacity = round(rng.uniform(0.35, 0.70), 2)
+
+        stars.append(
+            Star(
+                x=round(rng.uniform(0, width), 2),
+                y=round(rng.uniform(0, height), 2),
+                radius=radius,
+                opacity=opacity,
+            )
         )
-        for _ in range(count)
-    )
+    return tuple(stars)
 
 
 def build_layout(

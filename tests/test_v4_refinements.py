@@ -250,3 +250,50 @@ def test_workflow_has_v4_comet_arguments():
     assert "--comet-flight 9" in workflow
     assert "--comet-spacing 3.5" in workflow
     assert "--max-active-comets 3" in workflow
+
+
+def test_orbit_stroke_visibility_and_dimensions(test_user, multi_repos):
+    """Verify orbital paths are 1.2px stroke-width and 0.40 opacity."""
+    languages = GitHubClient.aggregate_languages(multi_repos)
+    layout = build_layout(test_user, multi_repos, languages)
+    svg = render_svg(layout, animate=True)
+    root = ElementTree.fromstring(svg)
+
+    orbits_group = root.find(".//{http://www.w3.org/2000/svg}g[@class='orbits']")
+    assert orbits_group is not None
+    ellipses = orbits_group.findall("{http://www.w3.org/2000/svg}ellipse")
+    assert len(ellipses) == len(layout.planets)
+    for ellipse in ellipses:
+        assert ellipse.get("stroke") == "#ffffff"
+        assert ellipse.get("stroke-width") == "1.2"
+        assert ellipse.get("stroke-opacity") == "0.40"
+
+
+def test_improved_star_visibility_radii_and_opacities(test_user, multi_repos):
+    """Verify improved starfield radii (>=0.8px, up to 1.8px) and higher opacities."""
+    languages = GitHubClient.aggregate_languages(multi_repos)
+    layout = build_layout(test_user, multi_repos, languages)
+    assert len(layout.stars) > 0
+
+    radii = [star.radius for star in layout.stars]
+    opacities = [star.opacity for star in layout.stars]
+
+    # Minimum radius >= 0.8px
+    assert min(radii) >= 0.80
+    # Maximum radius up to 1.8px
+    assert max(radii) <= 1.80
+    assert any(r >= 1.30 for r in radii)
+
+    # Opacities
+    assert min(opacities) >= 0.35
+    assert max(opacities) <= 0.95
+    # Average opacity is significantly higher than old 0.43
+    avg_opacity = sum(opacities) / len(opacities)
+    assert avg_opacity >= 0.50
+
+    # Verify distribution tiers: most stars in 0.35-0.70, some brighter in 0.80-0.95
+    tier_mid = [op for op in opacities if 0.35 <= op <= 0.70]
+    tier_bright = [op for op in opacities if 0.80 <= op <= 0.95]
+    assert len(tier_mid) > len(tier_bright)
+    assert len(tier_bright) > 0
+

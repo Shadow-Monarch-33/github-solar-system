@@ -225,8 +225,8 @@ def _orbits(layout: SolarSystemLayout, theme: dict) -> list[str]:
                     "rx": _n(planet.orbit * layout.aspect),
                     "ry": _n(planet.orbit),
                     "stroke": "#ffffff",
-                    "stroke-width": "0.75",
-                    "stroke-opacity": "0.20",
+                    "stroke-width": "1.2",
+                    "stroke-opacity": "0.40",
                 },
                 close=True,
             )
