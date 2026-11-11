@@ -1,3 +1,4 @@
+
 name: Update solar system
 
 on:
@@ -16,9 +17,12 @@ jobs:
   update:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -33,84 +37,91 @@ jobs:
       - name: Generate SVG
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python generate.py --username Shadow-Monarch-33 --output output/solar-system.svg --comet-flight 9 --comet-spacing 3.5 --max-active-comets 3
+        run: |
+          python generate.py \
+            --username Shadow-Monarch-33 \
+            --output output/solar-system.svg \
+            --comet-flight 9 \
+            --comet-spacing 3.5 \
+            --max-active-comets 3
 
       - name: Validate SVG
         run: |
           python - <<'PY'
           import pathlib
-          import xml.etree.ElementTree as ElementTree
+          import xml.etree.ElementTree as ET
 
-          svg = pathlib.Path("output/solar-system.svg").read_text(encoding="utf-8")
-          root = ElementTree.fromstring(svg)
+          path = pathlib.Path("output/solar-system.svg")
+          svg = path.read_text(encoding="utf-8")
+          root = ET.fromstring(svg)
           lowered = svg.lower()
-          for forbidden in ("<script", "<foreignobject", "@import", "url(http", "xlink:href", "javascript:"):
-              assert forbidden not in lowered, forbidden
+
+          forbidden = (
+              "<script",
+              "<foreignobject",
+              "@import",
+              "url(http",
+              "xlink:href",
+              "javascript:",
+          )
+
+          for item in forbidden:
+              assert item not in lowered, item
+
           for node in root.iter():
               tag = node.tag.rsplit("}", 1)[-1]
               if tag == "image":
                   href = node.get("href") or ""
-                  assert href.startswith("data:image/"), "external image in SVG"
-          assert "ghp_" not in svg and "github_pat_" not in svg
-          print("SVG is valid XML with no scripts, external assets or tokens")
+                  assert href.startswith("data:image/"), (
+                      "External image detected"
+                  )
+
+          assert "ghp_" not in svg
+          assert "github_pat_" not in svg
+
+          print("SVG validated successfully")
           PY
 
-      - name: Generate animated GIF fallback
-        continue-on-error: true
-        run: python tools/render_gif.py --svg output/solar-system.svg --output output/solar-system.gif
-
-      - name: Validate GIF fallback
-        run: |
-          if [ -s output/solar-system.gif ]; then
-            file output/solar-system.gif
-          else
-            echo "No GIF fallback generated; keeping the SVG only"
-          fi
-
       - name: Commit and push when changed
+        shell: bash
         run: |
-          if [ -z "$(git status --porcelain output/solar-system.svg output/solar-system.gif)" ]; then
-            echo "No changes to commit"
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add output/solar-system.svg
-          if [ -f output/solar-system.gif ]; then
-            git add output/solar-system.gif
-          fi
-          git commit -m "chore: update solar system [skip ci]"
+          set -euo pipefail
 
           branch="${GITHUB_REF_NAME:-main}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add output/solar-system.svg
+
+          if git diff --cached --quiet; then
+            echo "No SVG changes to commit"
+            exit 0
+          fi
+
+          git commit -m "chore: update solar system [skip ci]"
+
           for attempt in 1 2 3; do
-            if push_output="$(git push origin "$branch" 2>&1)"; then
-              push_status=0
-            else
-              push_status=$?
+            echo "Push attempt $attempt of 3"
+
+            git fetch origin "$branch"
+
+            if ! git rebase "origin/$branch"; then
+              git rebase --abort || true
+              echo "::error::Rebase conflict; stopping safely"
+              exit 1
             fi
-            printf '%s\n' "$push_output"
-            if [ "$push_status" -eq 0 ]; then
+
+            if git push origin "HEAD:$branch"; then
+              echo "Successfully published updated SVG"
               exit 0
             fi
 
-            if ! printf '%s\n' "$push_output" | grep -Eiq 'non-fast-forward|fetch first|remote contains work'; then
-              echo "::error::Push failed for a reason other than a non-fast-forward update"
-              exit "$push_status"
-            fi
-
             if [ "$attempt" -eq 3 ]; then
-              echo "::error::Push still rejected after 3 attempts"
-              exit "$push_status"
+              echo "::error::Push failed after 3 attempts"
+              exit 1
             fi
 
-            echo "Push was rejected as non-fast-forward; fetching and rebasing before retry $((attempt + 1))"
-            if ! git fetch origin "$branch"; then
-              echo "::error::Unable to fetch the latest $branch from origin"
-              exit 1
-            fi
-            if ! git rebase "origin/$branch"; then
-              git rebase --abort || true
-              echo "::error::Rebase conflict while incorporating the latest remote $branch; no remote changes were overwritten"
-              exit 1
-            fi
+            echo "Remote changed; retrying with latest branch"
           done
