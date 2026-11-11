@@ -1,31 +1,38 @@
 ---
-name: GitHub Solar System
-description: A near-black, self-contained animated SVG portrait of a GitHub profile as a solar system.
+name: GitHub Solar System V3
+description: A pure-black, self-contained animated SVG portrait of a GitHub profile as a solar system with vector language logos, subtle orbits, and commit comets.
 colors:
-  void: "#03040A"
-  deep-navy: "#070B18"
+  void: "#000000"
   star: "#FFFFFF"
-  orbit: "#8EA0C9"
-  text: "#EEF2FF"
-  muted: "#9AA4C4"
+  orbit: "#FFFFFF"
+  text: "#FFFFFF"
+  muted: "#888888"
   sun-core: "#FFE9A8"
-  sun-mid: "#FFB84D"
-  sun-glow: "#FF7A18"
-  accent: "#7DD3FC"
+  sun-mid: "#FFD27A"
+  sun-halo: "#FFE3B3"
+  sun-rim: "#FF9A3D"
+  sun-border: "#FFD166"
+  comet-head: "#FFFFFF"
+  comet-glow: "#FFFFFF"
 typography:
+  mono-header:
+    fontFamily: "ui-monospace, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace"
+    fontSize: "10.5px"
+    fontWeight: 400
+    letterSpacing: "2.0px"
+  mono-legend:
+    fontFamily: "ui-monospace, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace"
+    fontSize: "9.5px"
+    fontWeight: 400
+    letterSpacing: "1.2px"
   planet-label:
-    fontFamily: "Avenir Next, Segoe UI, Ubuntu, Helvetica Neue, Arial, sans-serif"
-    fontSize: "12.2px"
-    fontWeight: 600
-    letterSpacing: "0.4px"
-  moon-label:
-    fontFamily: "Avenir Next, Segoe UI, Ubuntu, Helvetica Neue, Arial, sans-serif"
-    fontSize: "8.2px"
+    fontFamily: "'Avenir Next', 'Segoe UI', Ubuntu, 'Helvetica Neue', Arial, sans-serif"
+    fontSize: "10.0px"
     fontWeight: 600
     letterSpacing: "0.4px"
   comet-label:
-    fontFamily: "Avenir Next, Segoe UI, Ubuntu, Helvetica Neue, Arial, sans-serif"
-    fontSize: "9.4px"
+    fontFamily: "'Avenir Next', 'Segoe UI', Ubuntu, 'Helvetica Neue', Arial, sans-serif"
+    fontSize: "9.8px"
     fontWeight: 600
     letterSpacing: "0.4px"
 rounded:
@@ -37,17 +44,13 @@ spacing:
   vertical-margin: "34px"
 components:
   planet:
-    backgroundColor: "{colors.deep-navy}"
     textColor: "{colors.text}"
     typography: "{typography.planet-label}"
     rounded: "{rounded.full}"
   moon:
-    backgroundColor: "{colors.orbit}"
-    textColor: "{colors.muted}"
-    typography: "{typography.moon-label}"
     rounded: "{rounded.full}"
   comet:
-    backgroundColor: "{colors.accent}"
+    backgroundColor: "{colors.comet-head}"
     textColor: "{colors.text}"
     typography: "{typography.comet-label}"
     rounded: "{rounded.full}"
@@ -55,49 +58,42 @@ components:
 
 ## Overview
 
-A deep-space snapshot of a GitHub profile. The avatar is the sun, languages are
-planets sized by real code bytes, repositories are moons, and recent verified
-commits are comets. The scene is composed to feel like an astronomy poster, not
-a statistics dashboard. The only visible words are language names and repository
-names.
+A refined deep-space snapshot of a GitHub profile (V3). The avatar is the central sun
+with a softened glow, dominant languages are planets bearing vector logos and name labels,
+repositories are small luminous moons revolving around their language planet, and recent
+verified commits are comets crossing diagonally from the left boundary.
 
 ## Colors
 
-The field is near-black (`#03040A`) with a navy bottom and low-opacity nebula
-washes. Stars are white at low opacity. Orbits use a cool desaturated blue at
-thin, low opacity. Planet colors come from GitHub's linguist palette where
-known, so the language is recognizable before the label is read. The sun is warm:
-`#FFE9A8` core through `#FFB84D` to a `#FF7A18` corona.
+The field is pure black (`#000000`). Stars are white at subtle opacity variations.
+Orbits use neutral white at low opacity (0.08) for minimal visual clutter.
+Planet colors derive from GitHub's linguist palette with each planet housing its
+crisp vector logo. The sun's glow is softened with a warm golden border (`#FFD166`)
+and rim light (`#FF9A3D`). Comets and comet tails are pure white (`#FFFFFF`).
 
 ## Typography
 
-One system sans stack, three small sizes. Planet labels are 12.2 px / 600 with
-0.4 px tracking; moon labels are 8.2 px / 600 in the muted color; comet labels
-are 9.4 px / 600. Every label uses a dark `paint-order: stroke` outline so it
-stays readable over glows and other bodies. Never rotate label glyphs.
+- Minimal monospace header (`SOLAR SYSTEM · @USERNAME`) in upper-left and
+  legend (`planets = languages · moons = repos · comets = recent pushes`) in lower-right.
+- Planet labels use sans-serif bold, centered directly below each planet without percentages.
+- Moon labels are omitted entirely for visual minimalism.
+- Comet labels are attached directly to each moving comet.
 
-## Layout
+## Layout & Orbit Geometry
 
-A 1200×675 landscape field with the sun at the exact center. Orbits are
-ellipses up to 1.55:1, spaced by the planet's disc plus its moon zone so discs
-and moon rings never overlap. The outermost orbit leaves room for labels and
-moons inside the canvas. Planets start on a spread phase; each has its own
-period (34–75 s), direction and negative begin offset. Moons are children of
-the planet group, orbit at 13–31 s with staggered phases, and keep upright
-labels. Comets traverse bounded cubic paths and fade at both ends.
+- 1200×675 canvas with the sun at exact center.
+- Orbits are wide, flattened horizontal ellipses (aspect ratio up to 2.15:1).
+- Adaptive orbital geometry adjusts radii, scaling, and spacing so profiles with
+  3 to 50+ languages render without clipping or overlap.
+- Exactly one orbital ellipse per language planet (no empty or decorative orbits).
 
-## Elevation & Depth
+## Motion
 
-Depth comes from radial gradients, a soft sun corona, faint orbital glows and
-layered planet shading — not from card shadows or borders. Stars and nebulae
-sit behind everything. The static fallback duplicates the same composition at
-the base transforms.
-
-## Shapes
-
-Everything is circular or elliptical: sun, planets, moons, comet heads,
-orbit paths. The avatar is clipped to a circle with `preserveAspectRatio`
-`xMidYMid slice`. No rectangles, panels, cards or dashboard chrome.
+- SMIL native SVG animations: continuous planet revolution, nested moon orbits,
+  and left-to-right diagonal comet trajectories.
+- Comets enter across the left boundary and move toward the lower-right; at most two
+  comets are active at any single instant.
+- Upright orientation: logos and planet labels maintain an upright posture throughout orbits.
 
 ## Components
 

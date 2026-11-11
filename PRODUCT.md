@@ -37,17 +37,11 @@ kept current by a daily GitHub Actions refresh.
 
 ## Core behavior
 
-- The profile avatar is the sun, embedded as a self-contained data URI.
-- Planets are the profile's dominant languages, sized by aggregated language
-  bytes; each repo orbits as a moon around its primary language's planet.
-- Moons follow their moving planet through nested SVG groups while revolving
-  around it. No JavaScript is used.
-- Comets are real public commits from a configurable window (7 days by default),
-  deduplicated by repository and SHA and limited to the newest commits. One
-  comet per repository keeps labels legible. Activity is never fabricated.
-- The only visible text is programming language names and repository names.
-  There is no heading, quote, count, percentage legend, repository index or
-  statistics dashboard.
+- The profile avatar is the sun, embedded as a self-contained data URI with a subtle warm golden border and soft halo.
+- Planets are the profile's dominant languages, sized by aggregated language bytes. Each planet embeds its crisp programming language vector logo centered and upright, with the language name positioned directly beneath it.
+- Repositories orbit their primary language as luminous moons (dots without repository name labels) following their parent planet.
+- Comets are real public commits from a configurable window (7 days by default), entering from the left boundary and travelling diagonally toward the lower-right with pure-white tapered trails and attached repository name labels.
+- Minimal text chrome: A top-left `SOLAR SYSTEM · @USERNAME` header and bottom-right `planets = languages · moons = repos · comets = recent pushes` legend in subtle monospace. No promotional branding, percentages, or statistics panels.
 - New repos are picked up automatically on the next run; forks are excluded by
   default, with a config flag to include them.
 - Language colors stay recognizable to developers who know GitHub's palette.
@@ -73,19 +67,17 @@ kept current by a daily GitHub Actions refresh.
 - Python, preferring the standard library; a plain `python generate.py …`
   invocation is the interface. GIF rendering is optional tooling.
 
-## Decisions confirmed by the user
+## Decisions confirmed by the user (V3 Visual Refinement)
 
-- Visual direction: near-black (`#03040A`) deep-space field, subtle navy depth,
-  small stars, glowing planets, thin low-opacity orbits, soft gradients, no
-  dashboard chrome.
-- The avatar is the sun; no username or caption appears beside it.
-- Every visible label is a language name or a repository name.
-- Comets are real commits from the last 7 days by default, labelled with their
-  repository; no decorative comets and no invented activity.
-- Planets and moons animate continuously with native SVG motion; moons must
-  follow their moving planets.
-- The SVG is the primary output; a generated animated GIF is the fallback when a
-  README host suppresses SVG animation.
+- Background: Pure black (`#000000`) space with white twinkling stars.
+- Sun: Refined avatar disc with reduced glow intensity, thin golden halo and rim.
+- Orbits: Wider, flatter ellipses (aspect ratio up to 2.15:1) rendered as subtle neutral gray lines with exactly one ellipse per language planet (no empty or decorative orbits).
+- Planetary Logos: Scalable logo registry supporting 50+ languages with recognizable vector paths and clean monospace abbreviation fallbacks for unknown languages.
+- Planetary Labels: Centered horizontally directly underneath each planet, moving upright without rotating upside down, displaying only language names (percentages removed).
+- Moons: Small luminous dots revolving around parent planets without text labels. Accessible tooltips (`<title>`) retained for hover inspectability.
+- Comets: Maximum two simultaneously active comets, entering from the left boundary and moving diagonally down-right; pure-white tapered glowing tail; repository name attached directly beside the comet head.
+- Chrome: Top-left `SOLAR SYSTEM · @USERNAME` and bottom-right `planets = languages · moons = repos · comets = recent pushes`.
+- Scalability: Adaptive orbital geometry ensuring clean, non-overlapping layouts across 3, 10, 20, 40+ languages.
 
 ## Inferred assumptions
 
