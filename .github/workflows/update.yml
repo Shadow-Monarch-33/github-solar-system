@@ -83,8 +83,11 @@ jobs:
 
           branch="${GITHUB_REF_NAME:-main}"
           for attempt in 1 2 3; do
-            push_output="$(git push origin "$branch" 2>&1)"
-            push_status=$?
+            if push_output="$(git push origin "$branch" 2>&1)"; then
+              push_status=0
+            else
+              push_status=$?
+            fi
             printf '%s\n' "$push_output"
             if [ "$push_status" -eq 0 ]; then
               exit 0
