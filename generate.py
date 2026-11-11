@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import sys
 import xml.etree.ElementTree as ElementTree
@@ -15,8 +16,11 @@ from src.avatar import AvatarError, read_avatar_file, to_data_uri
 from src.data_models import Commit, Repository, User
 from src.github_client import GitHubClient, GitHubError
 from src.layout import (
+    DEFAULT_COMET_FLIGHT,
     DEFAULT_COMET_LIMIT,
+    DEFAULT_COMET_SPACING,
     DEFAULT_HEIGHT,
+    DEFAULT_MAX_ACTIVE_COMETS,
     DEFAULT_WIDTH,
     STAR_DENSITY,
     build_layout,
@@ -237,6 +241,24 @@ def build_parser() -> argparse.ArgumentParser:
         help=f"Maximum simultaneous commit comets (default: {DEFAULT_COMET_LIMIT}).",
     )
     parser.add_argument(
+        "--comet-flight",
+        type=float,
+        default=DEFAULT_COMET_FLIGHT,
+        help=f"Duration of each comet flight in seconds (default: {DEFAULT_COMET_FLIGHT}).",
+    )
+    parser.add_argument(
+        "--comet-spacing",
+        type=float,
+        default=DEFAULT_COMET_SPACING,
+        help=f"Time between comet launches in seconds (default: {DEFAULT_COMET_SPACING}).",
+    )
+    parser.add_argument(
+        "--max-active-comets",
+        type=int,
+        default=DEFAULT_MAX_ACTIVE_COMETS,
+        help=f"Maximum simultaneously visible comets (default: {DEFAULT_MAX_ACTIVE_COMETS}).",
+    )
+    parser.add_argument(
         "--avatar",
         help="Use a local image file for the sun instead of fetching the GitHub avatar.",
     )
@@ -274,6 +296,18 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("--commit-lookback-days must be at least 1")
     if args.max_comets < 0:
         parser.error("--max-comets must be zero or greater")
+    if not (math.isfinite(args.comet_flight) and args.comet_flight > 0):
+        parser.error("--comet-flight must be a positive finite number")
+    if not (math.isfinite(args.comet_spacing) and args.comet_spacing > 0):
+        parser.error("--comet-spacing must be a positive finite number")
+    if args.max_active_comets < 1:
+        parser.error("--max-active-comets must be at least 1")
+    if math.ceil(args.comet_flight / args.comet_spacing) > args.max_active_comets:
+        parser.error(
+            f"--comet-flight ({args.comet_flight}) and --comet-spacing ({args.comet_spacing}) would allow "
+            f"{math.ceil(args.comet_flight / args.comet_spacing)} simultaneously active comets, "
+            f"which exceeds --max-active-comets ({args.max_active_comets})"
+        )
 
     try:
         if args.fixture:
@@ -296,6 +330,9 @@ def main(argv: list[str] | None = None) -> int:
             height=args.height,
             star_density=args.star_density,
             comet_limit=args.max_comets,
+            comet_flight=args.comet_flight,
+            comet_spacing=args.comet_spacing,
+            max_active_comets=args.max_active_comets,
         )
         svg = render_svg(
             layout,

@@ -158,7 +158,7 @@ def test_comets_always_travel_upper_left_to_lower_right(user, repos, commits):
         assert comet.start_y <= layout.height * 0.5
 
 
-def test_at_most_two_comets_are_visible_at_once(user, repos, commits):
+def test_at_most_three_comets_are_visible_at_once_by_default(user, repos, commits):
     layout = layout_for(user, repos, commits=commits)
     cycle = layout.comets[0].cycle
     assert all(abs(comet.cycle - cycle) < 1e-6 for comet in layout.comets)
@@ -170,8 +170,32 @@ def test_at_most_two_comets_are_visible_at_once(user, repos, commits):
             for comet in layout.comets
             if (moment - comet.window_start) % comet.cycle < comet.flight
         )
-        assert visible <= 2
+        assert visible <= 3
     for moment in (0.0, cycle, cycle - 1e-6, cycle + 1e-6):
+        visible = sum(
+            1
+            for comet in layout.comets
+            if (moment - comet.window_start) % comet.cycle < comet.flight
+        )
+        assert visible <= 3
+
+
+def test_at_most_two_comets_when_configured(user, repos, commits):
+    languages = GitHubClient.aggregate_languages(repos)
+    layout = build_layout(
+        user,
+        repos,
+        languages,
+        commits=commits,
+        comet_flight=7.5,
+        comet_spacing=3.85,
+        max_active_comets=2,
+    )
+    cycle = layout.comets[0].cycle
+    assert all(abs(comet.cycle - cycle) < 1e-6 for comet in layout.comets)
+
+    for step in range(0, 401):
+        moment = cycle * step / 400.0
         visible = sum(
             1
             for comet in layout.comets

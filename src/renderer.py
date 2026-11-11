@@ -121,6 +121,23 @@ def _defs(layout: SolarSystemLayout, theme: dict, animate: bool) -> list[str]:
     )
     parts.append("</clipPath>")
 
+    parts.append(_tag("clipPath", {"id": "roundedFrame", "clipPathUnits": "userSpaceOnUse"}))
+    parts.append(
+        _tag(
+            "rect",
+            {
+                "x": "0",
+                "y": "0",
+                "width": layout.width,
+                "height": layout.height,
+                "rx": "16",
+                "ry": "16",
+            },
+            close=True,
+        )
+    )
+    parts.append("</clipPath>")
+
     for index, planet in enumerate(layout.planets):
         base = planet.color
         parts.append(
@@ -640,6 +657,28 @@ def _write_atomic(path: str | os.PathLike[str], content: str) -> None:
         raise
 
 
+def _frame_border(layout: SolarSystemLayout) -> list[str]:
+    return [
+        _tag(
+            "rect",
+            {
+                "class": "frame-border",
+                "x": "0.5",
+                "y": "0.5",
+                "width": _n(layout.width - 1),
+                "height": _n(layout.height - 1),
+                "rx": "15.5",
+                "ry": "15.5",
+                "fill": "none",
+                "stroke": "#ffffff",
+                "stroke-width": "1",
+                "stroke-opacity": "0.35",
+            },
+            close=True,
+        )
+    ]
+
+
 def render_svg(
     layout: SolarSystemLayout,
     output_path: str | os.PathLike[str] | None = None,
@@ -669,6 +708,7 @@ def render_svg(
     parts.append(_esc(_description(layout)))
     parts.append("</desc>")
     parts.extend(_defs(layout, palette, animate))
+    parts.append(_tag("g", {"clip-path": "url(#roundedFrame)"}))
     parts.extend(_background(layout, palette))
     parts.extend(_stars(layout, palette))
     parts.extend(_orbits(layout, palette))
@@ -695,6 +735,8 @@ def render_svg(
         for comet in layout.comets[:2]:
             parts.extend(_comet_group(comet, palette, False))
 
+    parts.append("</g>")
+    parts.extend(_frame_border(layout))
     parts.append("</svg>")
 
     svg = "\n".join(part for part in parts if part) + "\n"

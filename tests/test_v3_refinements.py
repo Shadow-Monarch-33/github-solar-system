@@ -416,12 +416,10 @@ def test_comet_frequency_and_at_most_two_visible():
     layout = build_layout(user, repos, languages, commits=commits, comet_limit=5)
     assert len(layout.comets) == 5
 
-    # Launch spacing >= 3.75s for 7.5s flight, strictly ensuring <= 2 visible comets
+    # Default V4 launch spacing: 3.5s, flight: 9.0s, at most 3 visible comets
     slot_gap = layout.comets[1].window_start - layout.comets[0].window_start
-    assert 3.75 <= slot_gap <= 4.0
-
-    # Flight duration ~7.5s for smooth, natural movement
-    assert layout.comets[0].flight == 7.5
+    assert slot_gap == 3.5
+    assert layout.comets[0].flight == 9.0
 
     # Shallow downward trajectories: 15° to 25° below horizontal
     for comet in layout.comets:
@@ -430,7 +428,7 @@ def test_comet_frequency_and_at_most_two_visible():
         angle_deg = math.degrees(math.atan2(dy, dx))
         assert 15.0 <= angle_deg <= 25.0
 
-    # Test across 500 moments: at most 2 are simultaneously visible at any instant
+    # Test across 500 moments: at most 3 are simultaneously visible at any instant by default
     cycle = layout.comets[0].cycle
     for step in range(500):
         t = cycle * step / 500.0
@@ -438,7 +436,7 @@ def test_comet_frequency_and_at_most_two_visible():
             1 for c in layout.comets
             if (t - c.window_start) % c.cycle < c.flight
         )
-        assert active_count <= 2
+        assert active_count <= 3
         # Never all 5 visible simultaneously
         assert active_count < len(layout.comets)
 

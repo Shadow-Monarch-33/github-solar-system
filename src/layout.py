@@ -24,10 +24,13 @@ MOONS_PER_RING = 12
 MIN_PLANET_RADIUS = 0.5
 MAX_PLANET_RADIUS = 34.0
 DEFAULT_COMET_LIMIT = 6
+DEFAULT_COMET_FLIGHT = 9.0
+DEFAULT_COMET_SPACING = 3.5
+DEFAULT_MAX_ACTIVE_COMETS = 3
 ASPECT_CAP = 2.15
-COMET_FLIGHT = 7.5
-COMET_SLOT = 3.85
-COMET_MIN_CYCLE = 7.7
+COMET_FLIGHT = DEFAULT_COMET_FLIGHT
+COMET_SLOT = DEFAULT_COMET_SPACING
+COMET_MIN_CYCLE = 9.1
 
 
 @dataclass(frozen=True)
@@ -419,27 +422,46 @@ def _build_comets(
     height: int,
     limit: int,
     seed: int,
+    *,
+    flight: float = DEFAULT_COMET_FLIGHT,
+    spacing: float = DEFAULT_COMET_SPACING,
+    max_active: int = DEFAULT_MAX_ACTIVE_COMETS,
 ) -> tuple[Comet, ...]:
     """Map verified commits to white, diagonal comets on a shared cycle.
 
-    Every comet travels from the upper-left toward the lower-right. Their
-    active windows are spaced on one repeating cycle so that at most two
-    comets are ever visible at the same instant, including the loop boundary.
+    Every comet travels from the upper-left toward the lower-right with
+    a shallow trajectory. Active windows are spaced on one repeating cycle
+    so that at most max_active comets are ever visible at the same instant,
+    including the loop boundary. Simultaneously visible comets travel in
+    distinct vertical lanes to avoid visual overlap.
     """
     selected = _select_round_robin_commits(commits, limit)
     count = len(selected)
     if count == 0:
         return ()
 
-    cycle = round(max(COMET_MIN_CYCLE, (count + 1) * COMET_SLOT), 2)
+    cycle = round(max((count - 1) * spacing + flight + 0.1, (count + 1) * spacing), 2)
     comets: list[Comet] = []
+    num_lanes = max(1, min(max_active, 5))
+    total_y_span = height * 0.36
+    top_y = 25.0
+    lane_height = (total_y_span - top_y) / num_lanes
+
     for index, commit in enumerate(selected):
         rng = random.Random(_seed_for(f"comet:{seed}:{commit.repo}:{commit.sha}"))
+        # Spatial separation: assign to distinct vertical lanes
+        lane_idx = index % num_lanes
+        lane_min = top_y + lane_idx * lane_height + 4.0
+        lane_max = top_y + (lane_idx + 1) * lane_height - 4.0
+        if lane_max <= lane_min:
+            lane_min = top_y + lane_idx * lane_height
+            lane_max = top_y + (lane_idx + 1) * lane_height
+
         # Spawn from the left boundary, shallow downward angle (16° to 24° below horizontal)
         angle_deg = rng.uniform(16.0, 24.0)
         angle_rad = math.radians(angle_deg)
         start_x = rng.uniform(-200.0, -160.0)
-        start_y = rng.uniform(20.0, height * 0.38)
+        start_y = rng.uniform(lane_min, lane_max)
         end_x = width + rng.uniform(60.0, 160.0)
         dx = end_x - start_x
         dy = dx * math.tan(angle_rad)
@@ -471,8 +493,8 @@ def _build_comets(
                 end_x=round(end_x, 2),
                 end_y=round(end_y, 2),
                 cycle=round(cycle, 2),
-                window_start=round(index * COMET_SLOT, 2),
-                flight=COMET_FLIGHT,
+                window_start=round(index * spacing, 2),
+                flight=round(flight, 2),
                 static_x=round(static_x, 2),
                 static_y=round(static_y, 2),
             )
@@ -508,7 +530,22 @@ def build_layout(
     height: int = DEFAULT_HEIGHT,
     star_density: str = "normal",
     comet_limit: int = DEFAULT_COMET_LIMIT,
+    comet_flight: float = DEFAULT_COMET_FLIGHT,
+    comet_spacing: float = DEFAULT_COMET_SPACING,
+    max_active_comets: int = DEFAULT_MAX_ACTIVE_COMETS,
 ) -> SolarSystemLayout:
+    if not (isinstance(comet_flight, (int, float)) and math.isfinite(comet_flight) and comet_flight > 0):
+        raise ValueError(f"comet_flight must be a positive finite number, got {comet_flight}")
+    if not (isinstance(comet_spacing, (int, float)) and math.isfinite(comet_spacing) and comet_spacing > 0):
+        raise ValueError(f"comet_spacing must be a positive finite number, got {comet_spacing}")
+    if not (isinstance(max_active_comets, int) and max_active_comets >= 1):
+        raise ValueError(f"max_active_comets must be an integer >= 1, got {max_active_comets}")
+    if math.ceil(comet_flight / comet_spacing) > max_active_comets:
+        raise ValueError(
+            f"comet_flight ({comet_flight}) and comet_spacing ({comet_spacing}) allow "
+            f"{math.ceil(comet_flight / comet_spacing)} simultaneous comets, exceeding max_active_comets ({max_active_comets})"
+        )
+
     width = max(320, int(width))
     height = max(240, int(height))
     repositories = list(repositories)
@@ -684,6 +721,9 @@ def build_layout(
             height,
             int(comet_limit),
             seed,
+            flight=float(comet_flight),
+            spacing=float(comet_spacing),
+            max_active=int(max_active_comets),
         ),
         avatar_uri=str(avatar_uri or ""),
         title=f"Solar system for @{user.login}",

@@ -33,7 +33,7 @@ jobs:
       - name: Generate SVG
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python generate.py --username Shadow-Monarch-33 --output output/solar-system.svg
+        run: python generate.py --username Shadow-Monarch-33 --output output/solar-system.svg --comet-flight 9 --comet-spacing 3.5 --max-active-comets 3
 
       - name: Validate SVG
         run: |
