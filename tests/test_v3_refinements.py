@@ -196,8 +196,8 @@ def test_sun_brightness_reduced_and_golden_border():
     layout = build_layout(user, repos, languages)
     svg = render_svg(layout)
 
-    # sunGlow radius is subtle (1.55x, not 3.6x)
-    assert f'r="{layout.sun_radius * 1.55:.2f}"' in svg
+    # sunGlow radius is 2.8x (approximately 2.5-3x)
+    assert f'r="{layout.sun_radius * 2.8:.1f}"' in svg or f'r="{layout.sun_radius * 2.8:.2f}"' in svg
     assert f'r="{layout.sun_radius * 3.6:.2f}"' not in svg
     # Golden border on sun
     assert 'stroke="#ffd166"' in svg

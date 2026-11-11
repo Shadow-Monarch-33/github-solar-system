@@ -82,9 +82,12 @@ def _defs(layout: SolarSystemLayout, theme: dict, animate: bool) -> list[str]:
     parts.append(
         _tag("radialGradient", {"id": "sunGlow", "cx": "0.5", "cy": "0.5", "r": "0.5"})
     )
-    parts.append(_tag("stop", {"offset": "0", "stop-color": "#ffe3b3", "stop-opacity": "0.18"}, close=True))
-    parts.append(_tag("stop", {"offset": "0.5", "stop-color": "#ffb15c", "stop-opacity": "0.08"}, close=True))
-    parts.append(_tag("stop", {"offset": "1", "stop-color": "#ff8a3c", "stop-opacity": "0"}, close=True))
+    parts.append(_tag("stop", {"offset": "0", "stop-color": "#ffd166", "stop-opacity": "0.18"}, close=True))
+    parts.append(_tag("stop", {"offset": "0.25", "stop-color": "#ffd166", "stop-opacity": "0.18"}, close=True))
+    parts.append(_tag("stop", {"offset": "0.45", "stop-color": "#ffd166", "stop-opacity": "0.13"}, close=True))
+    parts.append(_tag("stop", {"offset": "0.65", "stop-color": "#ffd166", "stop-opacity": "0.07"}, close=True))
+    parts.append(_tag("stop", {"offset": "0.82", "stop-color": "#ffd166", "stop-opacity": "0.025"}, close=True))
+    parts.append(_tag("stop", {"offset": "1", "stop-color": "#ffd166", "stop-opacity": "0"}, close=True))
     parts.append("</radialGradient>")
 
     parts.append(
@@ -235,12 +238,29 @@ def _orbits(layout: SolarSystemLayout, theme: dict) -> list[str]:
     return parts
 
 
+def _sun_glow(layout: SolarSystemLayout) -> list[str]:
+    cx = _n(layout.cx)
+    cy = _n(layout.cy)
+    glow_radius = layout.sun_radius * 2.8
+    return [
+        _tag(
+            "circle",
+            {
+                "cx": cx,
+                "cy": cy,
+                "r": _n(glow_radius),
+                "fill": "url(#sunGlow)",
+            },
+            close=True,
+        )
+    ]
+
+
 def _sun(layout: SolarSystemLayout, theme: dict) -> list[str]:
     cx = _n(layout.cx)
     cy = _n(layout.cy)
     radius = layout.sun_radius
     parts = [
-        _tag("circle", {"cx": cx, "cy": cy, "r": _n(radius * 1.55), "fill": "url(#sunGlow)"}, close=True),
         _tag("circle", {"cx": cx, "cy": cy, "r": _n(radius), "fill": "url(#sunFallback)"}, close=True),
     ]
     if layout.avatar_uri:
@@ -711,6 +731,7 @@ def render_svg(
     parts.append(_tag("g", {"clip-path": "url(#roundedFrame)"}))
     parts.extend(_background(layout, palette))
     parts.extend(_stars(layout, palette))
+    parts.extend(_sun_glow(layout))
     parts.extend(_orbits(layout, palette))
     parts.extend(_sun(layout, palette))
     parts.extend(_header_text(layout))

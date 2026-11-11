@@ -297,3 +297,40 @@ def test_improved_star_visibility_radii_and_opacities(test_user, multi_repos):
     assert len(tier_mid) > len(tier_bright)
     assert len(tier_bright) > 0
 
+
+def test_subtle_golden_sun_glow(test_user, multi_repos):
+    """Verify soft golden sun glow (#ffd166, 0.18 max opacity, 2.8x radius, rendered behind orbits)."""
+    languages = GitHubClient.aggregate_languages(multi_repos)
+    layout = build_layout(test_user, multi_repos, languages)
+    svg = render_svg(layout, animate=True)
+    root = ElementTree.fromstring(svg)
+
+    # 1. Gradient definition
+    sun_glow = root.find(".//{http://www.w3.org/2000/svg}radialGradient[@id='sunGlow']")
+    assert sun_glow is not None
+    stops = sun_glow.findall("{http://www.w3.org/2000/svg}stop")
+    assert len(stops) >= 3
+    # Check glow color is #ffd166
+    for stop in stops:
+        assert stop.get("stop-color").lower() == "#ffd166"
+    # Max opacity ~0.15-0.20
+    first_opacity = float(stops[0].get("stop-opacity"))
+    assert 0.15 <= first_opacity <= 0.20
+    # Last stop fades completely to 0
+    last_opacity = float(stops[-1].get("stop-opacity"))
+    assert last_opacity == 0.0
+
+    # 2. Glow circle radius is 2.5-3x sun radius
+    glow_circle = root.find(".//{http://www.w3.org/2000/svg}circle[@fill='url(#sunGlow)']")
+    assert glow_circle is not None
+    glow_r = float(glow_circle.get("r"))
+    assert 2.5 * layout.sun_radius <= glow_r <= 3.0 * layout.sun_radius
+
+    # 3. Render order: glow circle must appear before orbits group in document order
+    # (i.e. rendered behind orbits, sun, and planets)
+    glow_pos = svg.index('fill="url(#sunGlow)"')
+    orbits_pos = svg.index('class="orbits"')
+    avatar_pos = svg.index('stroke="#ffd166"')
+    assert glow_pos < orbits_pos < avatar_pos
+
+
