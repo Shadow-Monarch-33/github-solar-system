@@ -7,7 +7,7 @@ Turn any public GitHub profile into an animated universe where programming langu
 Built with Python and SVG. No paid APIs, no JavaScript runtime, and no external rendering services.
 
 <p align="center">
-  <img src="output/solar-system.svg" alt="Animated GitHub Solar System for Shadow-Monarch-33" width="100%" />
+  <img src="output/solar-system-public.svg" alt="Animated GitHub Solar System for Shadow-Monarch-33" width="100%" />
 </p>
 
 <p align="center">
@@ -118,15 +118,66 @@ Fixture mode is useful when experimenting with the layout or when you've hit Git
 
 Once your generated SVG is committed to a public repository, you can embed it directly into your profile README.
 
+## Dual Universe Variants & Mode Configuration
+
+You can generate **Public Universe**, **Complete Universe**, or **Both** from the same codebase using `SOLAR_SYSTEM_MODE` (default: `public`), `--mode`, or interactive `--setup`:
+
+```bash
+# Interactive setup prompt:
+#   Which Solar Systems would you like to generate?
+#   1. Public only
+#   2. Complete only (public + private)
+#   3. Both (recommended)
+python generate.py --username YOUR_USERNAME --setup
+
+# Or configure non-interactively (e.g. in CI):
+SOLAR_SYSTEM_MODE=public python generate.py --username YOUR_USERNAME
+SOLAR_SYSTEM_MODE=all SOLAR_SYSTEM_TOKEN=... python generate.py --username YOUR_USERNAME
+SOLAR_SYSTEM_MODE=both SOLAR_SYSTEM_TOKEN=... python generate.py --username YOUR_USERNAME
+```
+
+To change your choice later, re-run with `--setup`, pass `--mode public|all|both`, or update the `SOLAR_SYSTEM_MODE` repository variable in GitHub Actions.
+
+### Embed in your GitHub README
+
+#### Public Universe (`./output/solar-system-public.svg`)
+
+Includes only public repositories and works without private-repository authorization:
+
 ```html
 <p align="center">
   <img
-    src="https://raw.githubusercontent.com/YOUR_USERNAME/github-solar-system/main/output/solar-system.svg"
-    alt="My GitHub Solar System"
+    src="./output/solar-system-public.svg"
+    alt="My Public GitHub Solar System"
     width="100%"
   />
 </p>
 ```
+
+#### Complete Universe (`./output/solar-system-all.svg`)
+
+Includes public and authorized private repositories (requires `SOLAR_SYSTEM_TOKEN`):
+
+```html
+<p align="center">
+  <img
+    src="./output/solar-system-all.svg"
+    alt="My Complete GitHub Solar System"
+    width="100%"
+  />
+</p>
+```
+
+#### Both Variants
+
+When `SOLAR_SYSTEM_MODE=both` is active, both `./output/solar-system-public.svg` and `./output/solar-system-all.svg` are generated simultaneously so you can reference either in your profile README without reconfiguring the generator.
+
+### Private Repository Authorization & Privacy Notes
+
+- **Token setup (`SOLAR_SYSTEM_TOKEN`)**: For Complete Universe (`all` or `both`), create a Fine-Grained Personal Access Token with read-only **Metadata** (and repository read access for the repositories you want included), and store it as the `SOLAR_SYSTEM_TOKEN` repository secret in GitHub Actions. Public Universe (`public`) uses the default `GITHUB_TOKEN`.
+- **Partial authorization**: GitHub's `/user/repos` API only returns private repositories that your token is authorized to access. If you scope a fine-grained PAT to selected repositories, only those repositories are included.
+- **No silent fallback**: Complete Universe (`output/solar-system-all.svg`) never silently falls back to public-only data or overwrites a previously valid `output/solar-system-all.svg` when private authorization fails.
+- **Privacy & indirect leakage**: Private repository names, URLs, descriptions, commit messages, commit SHAs, and tokens are never written to the SVG or logs (private moons are anonymized as `"Private repository"` without links, and private commits are excluded from comets). However, **indirect signals**—such as programming language identities, planet sizes, aggregate repository counts, and activity patterns—can still reflect private work. Complete Universe mode is therefore explicit opt-in.
 
 Replace `YOUR_USERNAME` with your account name.
 

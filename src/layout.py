@@ -51,6 +51,7 @@ class Moon:
     color: str
     label: str
     label_radius: float
+    private: bool = False
 
 
 @dataclass(frozen=True)
@@ -320,17 +321,18 @@ def _build_moons(
         radians = math.radians(angle)
         static_x = math.cos(radians) * orbit
         static_y = math.sin(radians) * orbit
-        star_weight = math.log1p(max(0, repo.stargazers_count))
+        is_private = bool(repo.private)
+        star_weight = 0.0 if is_private else math.log1p(max(0, repo.stargazers_count))
         moon_radius = max(0.35, (1.6 + 0.28 * star_weight) * scale)
-        label_text = repo.name
+        label_text = "" if is_private else repo.name
         label_radius = orbit
-        url = repo.html_url or f"https://github.com/{repo.full_name}"
+        url = "" if is_private else (repo.html_url or f"https://github.com/{repo.full_name}")
         moons.append(
             Moon(
-                name=repo.name,
-                repo=repo.full_name,
+                name="Private repository" if is_private else repo.name,
+                repo="" if is_private else repo.full_name,
                 url=url,
-                stars=repo.stargazers_count,
+                stars=0 if is_private else repo.stargazers_count,
                 radius=round(moon_radius, 2),
                 orbit=round(orbit, 2),
                 start_angle=round(angle, 2),
@@ -343,6 +345,7 @@ def _build_moons(
                 color=mix(planet_color, "#ffffff", 0.65),
                 label=label_text,
                 label_radius=round(label_radius, 2),
+                private=is_private,
             )
         )
     return tuple(moons)
@@ -709,10 +712,20 @@ def build_layout(
         )
 
     seed = _seed(width, height, user.login)
-    description = (
-        f"An animated orbit of {len(repositories)} public repositories across "
-        f"{len(languages)} programming languages."
-    )
+    private_repos = {repo.full_name.lower() for repo in repositories if repo.private}
+    public_commits = [
+        commit for commit in commits if commit.repo.lower() not in private_repos
+    ]
+    if private_repos:
+        description = (
+            f"An animated orbit of {len(repositories)} authorized repositories across "
+            f"{len(languages)} programming languages."
+        )
+    else:
+        description = (
+            f"An animated orbit of {len(repositories)} public repositories across "
+            f"{len(languages)} programming languages."
+        )
 
     return SolarSystemLayout(
         width=width,
@@ -728,7 +741,7 @@ def build_layout(
         planets=tuple(planets),
         stars=_build_stars(width, height, star_density, seed),
         comets=_build_comets(
-            list(commits),
+            public_commits,
             width,
             height,
             int(comet_limit),

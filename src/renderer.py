@@ -352,20 +352,23 @@ def _motion(path: str, duration: float, begin: float, *, rotate: bool = False) -
 
 
 def _moon_group(moon: Moon, theme: dict, animated: bool) -> list[str]:
-    parts = [
-        _tag("a", {"href": moon.url, "target": "_blank", "rel": "noopener"}),
+    has_link = bool(moon.url and not moon.private)
+    parts: list[str] = []
+    if has_link:
+        parts.append(_tag("a", {"href": moon.url, "target": "_blank", "rel": "noopener"}))
+    parts.append(
         _tag(
             "g",
             {
                 "class": "moon-motion" if animated else "moon-static",
                 "transform": f"translate({_n(moon.static_x)} {_n(moon.static_y)})",
             },
-        ),
-    ]
+        )
+    )
     if animated:
         parts.append(_motion(moon.path, moon.period, moon.begin))
     parts.append(_tag("title", {}))
-    parts.append(_esc(moon.name))
+    parts.append(_esc("Private repository" if moon.private else moon.name))
     parts.append("</title>")
     parts.append(
         _tag(
@@ -388,7 +391,7 @@ def _moon_group(moon: Moon, theme: dict, animated: bool) -> list[str]:
             close=True,
         )
     )
-    parts.append("</g></a>")
+    parts.append("</g></a>" if has_link else "</g>")
     return parts
 
 

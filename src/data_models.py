@@ -52,6 +52,7 @@ class Repository:
     size: int = 0
     fork: bool = False
     archived: bool = False
+    private: bool = False
     created_at: str | None = None
     pushed_at: str | None = None
     updated_at: str | None = None
@@ -71,6 +72,7 @@ class Repository:
             size=int(data.get("size") or 0),
             fork=bool(data.get("fork", False)),
             archived=bool(data.get("archived", False)),
+            private=bool(data.get("private", False)),
             created_at=data.get("created_at"),
             pushed_at=data.get("pushed_at"),
             updated_at=data.get("updated_at"),

@@ -37,13 +37,39 @@ jobs:
       - name: Generate SVG
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SOLAR_SYSTEM_TOKEN: ${{ secrets.SOLAR_SYSTEM_TOKEN }}
+          SOLAR_SYSTEM_MODE: ${{ vars.SOLAR_SYSTEM_MODE || 'public' }}
         run: |
-          python generate.py \
-            --username Shadow-Monarch-33 \
-            --output output/solar-system.svg \
-            --comet-flight 9 \
-            --comet-spacing 3.5 \
-            --max-active-comets 3
+          MODE="${SOLAR_SYSTEM_MODE:-public}"
+          if [ "$MODE" = "public" ] || [ "$MODE" = "both" ]; then
+            python generate.py \
+              --username Shadow-Monarch-33 \
+              --mode public \
+              --output output/solar-system-public.svg \
+              --comet-flight 9 \
+              --comet-spacing 3.5 \
+              --max-active-comets 3
+            cp output/solar-system-public.svg output/solar-system.svg
+          fi
+
+          if [ "$MODE" = "all" ] || [ "$MODE" = "both" ]; then
+            if [ -z "$SOLAR_SYSTEM_TOKEN" ]; then
+              if [ "$MODE" = "both" ]; then
+                echo "warning: SOLAR_SYSTEM_TOKEN is not configured; skipping Complete Universe (output/solar-system-all.svg)" >&2
+              else
+                echo "error: SOLAR_SYSTEM_TOKEN is required when SOLAR_SYSTEM_MODE=all" >&2
+                exit 1
+              fi
+            else
+              python generate.py \
+                --username Shadow-Monarch-33 \
+                --mode all \
+                --output output/solar-system-all.svg \
+                --comet-flight 9 \
+                --comet-spacing 3.5 \
+                --max-active-comets 3
+            fi
+          fi
 
       - name: Validate SVG
         run: |
@@ -51,35 +77,37 @@ jobs:
           import pathlib
           import xml.etree.ElementTree as ET
 
-          path = pathlib.Path("output/solar-system.svg")
-          svg = path.read_text(encoding="utf-8")
-          root = ET.fromstring(svg)
-          lowered = svg.lower()
+          paths = sorted(pathlib.Path("output").glob("solar-system*.svg"))
+          if not paths:
+              raise SystemExit("no solar-system*.svg outputs found")
+          for path in paths:
+              svg = path.read_text(encoding="utf-8")
+              root = ET.fromstring(svg)
+              lowered = svg.lower()
 
-          forbidden = (
-              "<script",
-              "<foreignobject",
-              "@import",
-              "url(http",
-              "xlink:href",
-              "javascript:",
-          )
+              forbidden = (
+                  "<script",
+                  "<foreignobject",
+                  "@import",
+                  "url(http",
+                  "xlink:href",
+                  "javascript:",
+              )
 
-          for item in forbidden:
-              assert item not in lowered, item
+              for item in forbidden:
+                  assert item not in lowered, f"{path}: {item}"
 
-          for node in root.iter():
-              tag = node.tag.rsplit("}", 1)[-1]
-              if tag == "image":
-                  href = node.get("href") or ""
-                  assert href.startswith("data:image/"), (
-                      "External image detected"
-                  )
+              for node in root.iter():
+                  tag = node.tag.rsplit("}", 1)[-1]
+                  if tag == "image":
+                      href = node.get("href") or ""
+                      assert href.startswith("data:image/"), (
+                          f"{path}: External image detected"
+                      )
 
-          assert "ghp_" not in svg
-          assert "github_pat_" not in svg
-
-          print("SVG validated successfully")
+              assert "ghp_" not in svg, f"{path}: token leaked"
+              assert "github_pat_" not in svg, f"{path}: token leaked"
+              print(f"Validated {path}")
           PY
 
       - name: Commit and push when changed
@@ -93,7 +121,7 @@ jobs:
           git config user.email \
             "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add output/solar-system.svg
+          git add output/solar-system*.svg
 
           if git diff --cached --quiet; then
             echo "No SVG changes to commit"

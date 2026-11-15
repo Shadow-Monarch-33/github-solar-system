@@ -31,6 +31,10 @@ from src.styles import DEFAULT_THEME, THEMES
 DEFAULT_MAX_LANGUAGE_FETCHES = 15
 AUTHENTICATED_MAX_LANGUAGE_FETCHES = 50
 FORBIDDEN_TAGS = {"script", "foreignObject"}
+VALID_MODES = ("public", "all", "both")
+PUBLIC_FILENAME = "solar-system-public.svg"
+ALL_FILENAME = "solar-system-all.svg"
+TOKEN_PREFIXES = ("ghp_", "github_pat_", "gho_", "ghu_", "ghs_")
 
 
 @dataclass
@@ -162,8 +166,36 @@ def _fetch_avatar(args: argparse.Namespace, user: User, client: GitHubClient) ->
         return ""
 
 
-def _fetch(args: argparse.Namespace) -> tuple[User, list[Repository], list, list[Commit], str]:
-    token = os.environ.get("GITHUB_TOKEN") or None
+def _fetch(
+    args: argparse.Namespace,
+    *,
+    include_private: bool = False,
+    token: str | None = None,
+) -> tuple[User, list[Repository], list, list[Commit], str]:
+    if token is None:
+        if include_private:
+            token = (
+                getattr(args, "private_token", None)
+                or os.environ.get("SOLAR_SYSTEM_TOKEN")
+                or os.environ.get("GITHUB_TOKEN")
+                or None
+            )
+        else:
+            token = os.environ.get("GITHUB_TOKEN") or None
+
+    if include_private:
+        if not token:
+            raise GitHubError(
+                "Private repository authorization is required for Complete Universe mode "
+                "(set SOLAR_SYSTEM_TOKEN or pass --private-token).",
+                401,
+            )
+        print(
+            "note: using scoped repository authorization for Complete Universe; "
+            "private repository names and commit details are redacted in SVG output.",
+            file=sys.stderr,
+        )
+
     client = GitHubClient(token=token)
     limit = args.max_language_fetches
     if limit is None:
@@ -177,6 +209,7 @@ def _fetch(args: argparse.Namespace) -> tuple[User, list[Repository], list, list
         args.username,
         include_forks=args.include_forks,
         include_archived=args.include_archived,
+        include_private=include_private,
         max_language_fetches=limit,
     )
     languages = client.aggregate_languages(repositories)
@@ -208,6 +241,96 @@ def _validate_svg(svg: str) -> None:
     for forbidden in ("@import", "url(http", "xlink:href", "javascript:"):
         if forbidden in lowered:
             raise ValueError(f"generated SVG contains forbidden content: {forbidden}")
+    for prefix in TOKEN_PREFIXES:
+        if prefix in svg:
+            raise ValueError("generated SVG contains a forbidden token pattern")
+
+
+def _run_setup() -> str:
+    if not sys.stdin.isatty():
+        raise ValueError(
+            "--setup requires an interactive terminal; pass --mode or set SOLAR_SYSTEM_MODE in unattended runs"
+        )
+    print("Which Solar Systems would you like to generate?")
+    print("1. Public only")
+    print("2. Complete only (public + private)")
+    print("3. Both (recommended)")
+    choice = input("Select [1-3] (default 3): ").strip()
+    mapping = {"1": "public", "2": "all", "3": "both", "": "both"}
+    if choice not in mapping:
+        raise ValueError(f"invalid selection {choice!r}; expected 1, 2, or 3")
+    return mapping[choice]
+
+
+def _resolve_mode(args: argparse.Namespace) -> str:
+    if args.setup:
+        return _run_setup()
+    raw = args.mode or os.environ.get("SOLAR_SYSTEM_MODE") or "public"
+    mode = raw.strip().lower()
+    if mode not in VALID_MODES:
+        raise ValueError(
+            f"invalid SOLAR_SYSTEM_MODE {raw!r}; expected one of: {', '.join(VALID_MODES)}"
+        )
+    return mode
+
+
+def _resolve_outputs(args: argparse.Namespace, mode: str) -> dict[str, Path]:
+    out_dir = Path(args.output_dir)
+    if args.output:
+        base_dir = Path(args.output).parent
+        if mode == "public":
+            return {"public": Path(args.public_output or args.output)}
+        if mode == "all":
+            return {"all": Path(args.all_output or args.output)}
+        return {
+            "public": Path(args.public_output) if args.public_output else base_dir / PUBLIC_FILENAME,
+            "all": Path(args.all_output) if args.all_output else base_dir / ALL_FILENAME,
+        }
+
+    public_path = Path(args.public_output) if args.public_output else out_dir / PUBLIC_FILENAME
+    all_path = Path(args.all_output) if args.all_output else out_dir / ALL_FILENAME
+    if mode == "public":
+        return {"public": public_path}
+    if mode == "all":
+        return {"all": all_path}
+    return {"public": public_path, "all": all_path}
+
+
+def _render_and_write(
+    args: argparse.Namespace,
+    user: User,
+    repositories: list[Repository],
+    languages: list,
+    commits: list[Commit],
+    avatar_uri: str,
+    output_path: Path,
+):
+    layout = build_layout(
+        user,
+        repositories,
+        languages,
+        commits=commits,
+        avatar_uri=avatar_uri,
+        width=args.width,
+        height=args.height,
+        star_density=args.star_density,
+        comet_limit=args.max_comets,
+        comet_flight=args.comet_flight,
+        comet_spacing=args.comet_spacing,
+        max_active_comets=args.max_active_comets,
+    )
+    svg = render_svg(
+        layout,
+        None,
+        theme=args.theme,
+        animate=not args.no_animation,
+    )
+    _validate_svg(svg)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = output_path.with_name(f".{output_path.name}.tmp")
+    tmp_path.write_text(svg, encoding="utf-8")
+    tmp_path.replace(output_path)
+    return layout
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -216,7 +339,42 @@ def build_parser() -> argparse.ArgumentParser:
         description="Render a GitHub profile as a self-contained SVG solar system.",
     )
     parser.add_argument("--username", help="GitHub username to visualise.")
-    parser.add_argument("--output", required=True, help="Path of the SVG file to write.")
+    parser.add_argument(
+        "--output",
+        default=None,
+        help="Path of the SVG file to write (single-variant compatibility).",
+    )
+    parser.add_argument(
+        "--output-dir",
+        default="output",
+        help="Directory for generated universe SVGs when --output is omitted (default: output).",
+    )
+    parser.add_argument(
+        "--public-output",
+        default=None,
+        help="Explicit output path for the Public Universe SVG.",
+    )
+    parser.add_argument(
+        "--all-output",
+        default=None,
+        help="Explicit output path for the Complete Universe SVG.",
+    )
+    parser.add_argument(
+        "--mode",
+        choices=VALID_MODES,
+        default=None,
+        help="Which Solar System variant(s) to generate (default: SOLAR_SYSTEM_MODE or 'public').",
+    )
+    parser.add_argument(
+        "--private-token",
+        default=None,
+        help="Read-only token for Complete Universe private repository access (defaults to SOLAR_SYSTEM_TOKEN).",
+    )
+    parser.add_argument(
+        "--setup",
+        action="store_true",
+        help="Interactively choose which Solar System variants to generate.",
+    )
     parser.add_argument(
         "--fixture",
         help="Read user, repositories, commits and avatar hints from a JSON fixture instead of the API.",
@@ -310,48 +468,71 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     try:
-        if args.fixture:
-            fixture = load_fixture(args.fixture)
-            user = fixture.user
-            repositories = fixture.repositories
-            languages = GitHubClient.aggregate_languages(repositories)
-            commits = [] if args.no_comets else fixture.commits
-            avatar_uri = "" if args.no_avatar else fixture.avatar_uri
-        else:
-            user, repositories, languages, commits, avatar_uri = _fetch(args)
-
-        layout = build_layout(
-            user,
-            repositories,
-            languages,
-            commits=commits,
-            avatar_uri=avatar_uri,
-            width=args.width,
-            height=args.height,
-            star_density=args.star_density,
-            comet_limit=args.max_comets,
-            comet_flight=args.comet_flight,
-            comet_spacing=args.comet_spacing,
-            max_active_comets=args.max_active_comets,
-        )
-        svg = render_svg(
-            layout,
-            args.output,
-            theme=args.theme,
-            animate=not args.no_animation,
-        )
-        _validate_svg(svg)
-    except (GitHubError, AvatarError, OSError, ValueError, KeyError) as exc:
+        mode = _resolve_mode(args)
+        outputs = _resolve_outputs(args, mode)
+    except ValueError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
 
-    moons = sum(len(planet.moons) for planet in layout.planets)
-    print(
-        f"Wrote {args.output} with {len(layout.planets)} languages, "
-        f"{moons} moons and {len(layout.comets)} comets "
-        f"from {layout.repos_count} repositories."
-    )
-    return 0
+    had_error = False
+    for variant in ("public", "all"):
+        output_path = outputs.get(variant)
+        if output_path is None:
+            continue
+        include_private = variant == "all"
+        try:
+            if args.fixture:
+                fixture = load_fixture(args.fixture)
+                user = fixture.user
+                if include_private:
+                    repositories = list(fixture.repositories)
+                else:
+                    repositories = [repo for repo in fixture.repositories if not repo.private]
+                languages = GitHubClient.aggregate_languages(repositories)
+                private_names = {
+                    name
+                    for repo in fixture.repositories
+                    if repo.private
+                    for name in (repo.name.lower(), repo.full_name.lower())
+                    if name
+                }
+                commits = (
+                    []
+                    if args.no_comets
+                    else [
+                        commit
+                        for commit in fixture.commits
+                        if commit.repo.lower() not in private_names
+                        and commit.repo_name.lower() not in private_names
+                    ]
+                )
+                avatar_uri = "" if args.no_avatar else fixture.avatar_uri
+            else:
+                user, repositories, languages, commits, avatar_uri = _fetch(
+                    args,
+                    include_private=include_private,
+                )
+
+            layout = _render_and_write(
+                args,
+                user,
+                repositories,
+                languages,
+                commits,
+                avatar_uri,
+                output_path,
+            )
+            moons = sum(len(planet.moons) for planet in layout.planets)
+            print(
+                f"Wrote {output_path} [{variant}] with {len(layout.planets)} languages, "
+                f"{moons} moons and {len(layout.comets)} comets "
+                f"from {layout.repos_count} repositories."
+            )
+        except (GitHubError, AvatarError, OSError, ValueError, KeyError) as exc:
+            print(f"error ({variant}): {exc}", file=sys.stderr)
+            had_error = True
+
+    return 1 if had_error else 0
 
 
 if __name__ == "__main__":

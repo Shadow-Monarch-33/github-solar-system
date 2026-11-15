@@ -224,28 +224,69 @@ class GitHubClient:
         except GitHubError:
             return {}
 
+    @staticmethod
+    def _repo_dedupe_key(repository: Repository) -> str:
+        if repository.id is not None:
+            return f"id:{repository.id}"
+        return f"name:{repository.full_name.lower()}"
+
     def get_repos(
         self,
         login: str,
         *,
         include_forks: bool = False,
         include_archived: bool = False,
+        include_private: bool = False,
         fetch_languages: bool = True,
         max_workers: int = 8,
         max_language_fetches: int = 15,
     ) -> list[Repository]:
-        path = f"/users/{urllib.parse.quote(str(login), safe='')}/repos"
-        raw = self._paginate(
-            path, {"type": "owner", "sort": "pushed", "direction": "desc"}
-        )
+        if include_private:
+            if not self.token:
+                raise GitHubError(
+                    "private repository access requires an authenticated token", 401
+                )
+            path = "/user/repos"
+            raw = self._paginate(
+                path,
+                {
+                    "affiliation": "owner",
+                    "visibility": "all",
+                    "sort": "pushed",
+                    "direction": "desc",
+                },
+            )
+        else:
+            path = f"/users/{urllib.parse.quote(str(login), safe='')}/repos"
+            raw = self._paginate(
+                path, {"type": "owner", "sort": "pushed", "direction": "desc"}
+            )
 
+        login_lower = str(login).lower()
         repos: list[Repository] = []
+        seen_keys: set[str] = set()
         for item in raw:
             repository = Repository.from_api(item)
+            if include_private:
+                owner = item.get("owner") if isinstance(item.get("owner"), dict) else {}
+                owner_login = str(owner.get("login") or "").lower()
+                if owner_login and owner_login != login_lower:
+                    continue
+                if not owner_login and "/" in repository.full_name:
+                    if repository.full_name.split("/", 1)[0].lower() != login_lower:
+                        continue
+            elif repository.private:
+                continue
+
             if repository.fork and not include_forks:
                 continue
             if repository.archived and not include_archived:
                 continue
+
+            dedupe_key = self._repo_dedupe_key(repository)
+            if dedupe_key in seen_keys:
+                continue
+            seen_keys.add(dedupe_key)
             repos.append(repository)
 
         if fetch_languages and repos:
@@ -355,7 +396,7 @@ class GitHubClient:
 
         targets: list[Repository] = []
         for repository in repositories:
-            if repository.fork or repository.archived:
+            if repository.fork or repository.archived or repository.private:
                 continue
             pushed = _parse_iso(repository.pushed_at)
             if pushed is not None and pushed < since:
