@@ -336,3 +336,32 @@ def test_subtle_golden_sun_glow(test_user, multi_repos):
     assert glow_pos < orbits_pos < avatar_pos
 
 
+def test_moon_visibility_glow_outline_and_preserved_geometry(test_user, multi_repos):
+    """Verify moons have luminous fill, subtle outer glow, thin outline, and unchanged geometry."""
+    languages = GitHubClient.aggregate_languages(multi_repos)
+    layout = build_layout(test_user, multi_repos, languages)
+    svg = render_svg(layout, animate=True)
+    root = ElementTree.fromstring(svg)
+
+    moon_groups = root.findall(".//{http://www.w3.org/2000/svg}g[@class='moon-motion']")
+    expected_moons = [moon for planet in layout.planets for moon in planet.moons]
+    assert len(moon_groups) == len(expected_moons) > 0
+
+    for mg, moon in zip(moon_groups, expected_moons):
+        circles = mg.findall("{http://www.w3.org/2000/svg}circle")
+        assert len(circles) == 3
+        glow, body, highlight = circles
+
+        # Geometry and motion preserved
+        assert float(body.get("r")) == pytest.approx(moon.radius, abs=0.05)
+        assert float(glow.get("r")) == pytest.approx(moon.radius * 2.3, abs=0.05)
+
+        # Subtle glow and thin luminous outline
+        assert glow.get("fill-opacity") == "0.28"
+        assert body.get("stroke") is not None
+        assert body.get("stroke-width") == "0.6"
+        assert body.get("stroke-opacity") == "0.85"
+        assert highlight.get("fill-opacity") == "0.85"
+
+
+

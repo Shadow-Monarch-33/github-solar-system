@@ -372,14 +372,28 @@ def _moon_group(moon: Moon, theme: dict, animated: bool) -> list[str]:
     parts.append(_tag("title", {}))
     parts.append(_esc("Private repository" if moon.private else moon.name))
     parts.append("</title>")
+    luminous = mix(moon.color, "#ffffff", 0.35)
+    outline = mix(luminous, "#ffffff", 0.45)
     parts.append(
         _tag(
             "circle",
-            {"r": _n(moon.radius * 2.2), "fill": moon.color, "fill-opacity": "0.22"},
+            {"r": _n(moon.radius * 2.3), "fill": luminous, "fill-opacity": "0.28"},
             close=True,
         )
     )
-    parts.append(_tag("circle", {"r": _n(moon.radius), "fill": moon.color}, close=True))
+    parts.append(
+        _tag(
+            "circle",
+            {
+                "r": _n(moon.radius),
+                "fill": luminous,
+                "stroke": outline,
+                "stroke-width": "0.6",
+                "stroke-opacity": "0.85",
+            },
+            close=True,
+        )
+    )
     parts.append(
         _tag(
             "circle",
@@ -388,7 +402,7 @@ def _moon_group(moon: Moon, theme: dict, animated: bool) -> list[str]:
                 "cy": _n(-moon.radius * 0.30),
                 "r": _n(moon.radius * 0.34),
                 "fill": "#ffffff",
-                "fill-opacity": "0.75",
+                "fill-opacity": "0.85",
             },
             close=True,
         )
