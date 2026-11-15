@@ -253,7 +253,7 @@ def test_workflow_has_v4_comet_arguments():
 
 
 def test_orbit_stroke_visibility_and_dimensions(test_user, multi_repos):
-    """Verify orbital paths are 1.2px stroke-width and 0.40 opacity."""
+    """Verify orbital paths use fine, evenly spaced silver/blue-white circular dots."""
     languages = GitHubClient.aggregate_languages(multi_repos)
     layout = build_layout(test_user, multi_repos, languages)
     svg = render_svg(layout, animate=True)
@@ -264,9 +264,11 @@ def test_orbit_stroke_visibility_and_dimensions(test_user, multi_repos):
     ellipses = orbits_group.findall("{http://www.w3.org/2000/svg}ellipse")
     assert len(ellipses) == len(layout.planets)
     for ellipse in ellipses:
-        assert ellipse.get("stroke") == "#ffffff"
-        assert ellipse.get("stroke-width") == "1.2"
-        assert ellipse.get("stroke-opacity") == "0.40"
+        assert ellipse.get("stroke") == "#dbeafe"
+        assert ellipse.get("stroke-width") == "1.4"
+        assert ellipse.get("stroke-opacity") == "0.58"
+        assert ellipse.get("stroke-dasharray") == "0.1 6.5"
+        assert ellipse.get("stroke-linecap") == "round"
 
 
 def test_improved_star_visibility_radii_and_opacities(test_user, multi_repos):
